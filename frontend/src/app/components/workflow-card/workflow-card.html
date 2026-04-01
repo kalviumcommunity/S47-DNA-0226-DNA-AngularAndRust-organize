@@ -1,0 +1,32 @@
+<div class="workflow-container">
+  <div class="workflow-card">
+    <div class="card-header">
+      <span class="badge" [class.badge-high]="priorityLevel === 'High'" [class.badge-medium]="priorityLevel === 'Medium'">
+        {{ priorityLevel }} Priority
+      </span>
+      <p class="dept-name">{{ department }}</p>
+    </div>
+
+    <!-- Interpolation: {{ requestTitle }} -->
+    <h3 class="title">{{ requestTitle }}</h3>
+
+    <div class="card-actions">
+      <!-- Event Binding: (click) -->
+      <button class="btn btn-approve" (click)="approveRequest()" [disabled]="isApproved">
+        {{ isApproved ? 'Approved' : 'Approve Request' }}
+      </button>
+      
+      <button class="btn btn-secondary" (click)="togglePriority()" [disabled]="isApproved">
+        Switch Priority
+      </button>
+    </div>
+
+    <!-- Conditionally Displayed Message using Angular @if -->
+    @if (isApproved) {
+      <div class="success-message">
+        <span class="check-icon">✔</span>
+        <p>{{ statusMessage }}</p>
+      </div>
+    }
+  </div>
+</div>
