@@ -1,0 +1,12 @@
+<button 
+  class="btn" 
+  [class]="'btn-' + btnType"
+  [disabled]="disabled"
+  (click)="onClick()">
+  
+  @if (icon) {
+    <span class="btn-icon">{{ icon }}</span>
+  }
+  
+  <span class="btn-label">{{ label }}</span>
+</button>

@@ -1,0 +1,26 @@
+<div class="card" [class]="'border-' + accentColor">
+  <!-- Card Header -->
+  <div class="card-header" *ngIf="cardTitle || icon || headerBadge">
+    <div class="header-left">
+      <div class="card-icon" *ngIf="icon">{{ icon }}</div>
+      <div class="header-titles">
+        <h3 *ngIf="cardTitle">{{ cardTitle }}</h3>
+        <p class="subtitle" *ngIf="subtitle">{{ subtitle }}</p>
+      </div>
+    </div>
+    
+    <div class="header-right" *ngIf="headerBadge">
+      <span class="badge" [class]="badgeClass">{{ headerBadge }}</span>
+    </div>
+  </div>
+
+  <!-- Card Body: Content Projection -->
+  <div class="card-body">
+    <ng-content></ng-content>
+  </div>
+
+  <!-- Card Footer: Content Projection -->
+  <div class="card-footer">
+    <ng-content select="[card-footer]"></ng-content>
+  </div>
+</div>

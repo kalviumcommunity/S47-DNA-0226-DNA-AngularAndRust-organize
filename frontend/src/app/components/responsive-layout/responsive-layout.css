@@ -17,32 +17,6 @@
   gap: 1rem;
 }
 
-.dashboard-header h1 {
-  font-size: 1.85rem;
-  font-weight: 800;
-  margin: 0;
-  letter-spacing: -0.02em;
-}
-
-.dashboard-header p {
-  color: #64748b;
-  margin: 0.25rem 0 0;
-}
-
-.btn-refresh {
-  background: white;
-  border: 1px solid #e2e8f0;
-  padding: 0.6rem 1.25rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-refresh:hover {
-  background: #f1f5f9;
-}
-
 /* 1. Statistics Grid: CSS Grid with auto-fit & minmax */
 .stats-grid {
   display: grid;
@@ -51,45 +25,9 @@
   margin-bottom: 2.5rem;
 }
 
-.stat-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+.stat-info-body {
   display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-  border-left: 4px solid #cbd5e1;
-}
-
-.stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-}
-
-.border-blue { border-left-color: #3b82f6; }
-.border-purple { border-left-color: #a855f7; }
-.border-amber { border-left-color: #f59e0b; }
-.border-green { border-left-color: #10b981; }
-
-.stat-icon {
-  font-size: 2rem;
-  background: #f8fafc;
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-}
-
-.stat-info h3 {
-  font-size: 0.8rem;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0;
+  flex-direction: column;
 }
 
 .stat-value {
@@ -112,17 +50,9 @@
   gap: 1.5rem;
 }
 
-.section-card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 1.5rem;
-}
-
-.section-card h2 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin: 0 0 1.5rem;
+.activity-section, .quick-links-section {
+  display: flex;
+  flex-direction: column;
 }
 
 /* Activity Items */
@@ -147,28 +77,9 @@
 
 /* Quick Action Tiles using Flexbox wrapping */
 .config-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.action-tile {
-  flex: 1 1 140px;
-  background: #f1f5f9;
-  border: none;
-  padding: 1rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #334155;
-  text-align: center;
-}
-
-.action-tile:hover {
-  background: #e2e8f0;
-  color: #0f172a;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.85rem;
 }
 
 /* RESPONSIVE BREAKPOINTS */

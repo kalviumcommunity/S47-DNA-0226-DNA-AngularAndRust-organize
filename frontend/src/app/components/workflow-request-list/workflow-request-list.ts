@@ -2,6 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WorkflowRequestService } from '../../services/workflow-request.service';
 import { WorkflowRequest } from '../../models/workflow-request.model';
+import { SharedModule } from '../../shared/shared-module';
 
 /**
  * WorkflowRequestListComponent
@@ -24,7 +25,7 @@ import { WorkflowRequest } from '../../models/workflow-request.model';
 @Component({
   selector: 'app-request-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SharedModule],
   templateUrl: './workflow-request-list.html',
   styleUrl: './workflow-request-list.css'
 })
