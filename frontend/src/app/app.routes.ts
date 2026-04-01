@@ -7,6 +7,11 @@ export const routes: Routes = [
       import('./components/workflow-request-list/workflow-request-list').then(m => m.WorkflowRequestListComponent)
   },
   {
+    path: 'counter',
+    loadComponent: () =>
+      import('./components/counter/counter').then(m => m.CounterComponent)
+  },
+  {
     path: '',
     redirectTo: 'requests',
     pathMatch: 'full'

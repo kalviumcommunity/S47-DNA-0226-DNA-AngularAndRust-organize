@@ -1,0 +1,31 @@
+<div class="counter-container">
+  <div class="counter-card">
+    <div class="card-header">
+      <h2>Workflow Action Counter</h2>
+      <p class="subtitle">Quickly track and manage your department's approval tasks</p>
+    </div>
+
+    <!-- Interpolation: {{ count }} -->
+    <!-- Displays the current state value dynamically -->
+    <div class="counter-display">
+      <span class="count-value">{{ count }}</span>
+      <span class="count-label">Actions Logged</span>
+    </div>
+
+    <div class="counter-actions">
+      <!-- Event Binding: (click) -->
+      <!-- Triggers methods in the component class -->
+      <button class="btn btn-secondary" (click)="decrement()" [disabled]="count === 0">
+        <span class="icon">−</span>
+      </button>
+      
+      <button class="btn btn-primary" (click)="increment()">
+        <span class="icon">+</span>
+      </button>
+    </div>
+
+    <div class="reset-container">
+      <button class="btn btn-text" (click)="reset()">Reset Counter</button>
+    </div>
+  </div>
+</div>
