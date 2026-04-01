@@ -17,6 +17,11 @@ export const routes: Routes = [
       import('./components/workflow-card/workflow-card').then(m => m.WorkflowCardComponent)
   },
   {
+    path: 'demo-cli',
+    loadComponent: () =>
+      import('./components/demo-cli/demo-cli').then(m => m.DemoCliComponent)
+  },
+  {
     path: '',
     redirectTo: 'requests',
     pathMatch: 'full'
