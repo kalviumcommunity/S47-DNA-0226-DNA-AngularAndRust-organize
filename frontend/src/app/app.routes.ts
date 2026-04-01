@@ -22,6 +22,11 @@ export const routes: Routes = [
       import('./components/demo-cli/demo-cli').then(m => m.DemoCliComponent)
   },
   {
+    path: 'responsive-layout',
+    loadComponent: () =>
+      import('./components/responsive-layout/responsive-layout').then(m => m.ResponsiveLayoutComponent)
+  },
+  {
     path: '',
     redirectTo: 'requests',
     pathMatch: 'full'

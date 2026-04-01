@@ -1,0 +1,60 @@
+<div class="dashboard-wrapper">
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1>Multi-Tenant Insights</h1>
+      <p>Overview of institutional workflows across all departments</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-refresh">Refresh Data</button>
+    </div>
+  </header>
+
+  <!-- Statistics Grid: Demonstrates CSS Grid with auto-fit -->
+  <section class="stats-grid">
+    @for (item of stats; track item.title) {
+      <div class="stat-card" [class]="'border-' + item.color">
+        <div class="stat-icon">{{ item.icon }}</div>
+        <div class="stat-info">
+          <h3>{{ item.title }}</h3>
+          <p class="stat-value">{{ item.value }}</p>
+          <span class="stat-change" [class.positive]="item.change.startsWith('+')">
+            {{ item.change }}
+          </span>
+        </div>
+      </div>
+    }
+  </section>
+
+  <!-- Main Content Grid: Demonstrates 2-column layout that stacks on mobile -->
+  <div class="content-main-grid">
+    <section class="activity-section">
+      <div class="section-card">
+        <h2>Recent Action Log</h2>
+        <div class="activity-list">
+          @for (act of recentActivity; track act.time) {
+            <div class="activity-item">
+              <div class="activity-meta">
+                <span class="user-name">{{ act.user }}</span>
+                <span class="dept-badge">{{ act.dept }}</span>
+              </div>
+              <p class="action-text">{{ act.action }}</p>
+              <span class="time-stamp">{{ act.time }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="quick-links-section">
+      <div class="section-card secondary">
+        <h2>Platform Configuration</h2>
+        <div class="config-actions">
+          <button class="action-tile">Manage Tenants</button>
+          <button class="action-tile">User Permissions</button>
+          <button class="action-tile">System Logs</button>
+          <button class="action-tile">API Settings</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
