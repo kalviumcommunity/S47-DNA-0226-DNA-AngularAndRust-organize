@@ -1,0 +1,214 @@
+/* Dashboard Container */
+.dashboard-wrapper {
+  padding: 2rem 1.5rem;
+  background: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #0f172a;
+}
+
+/* Header Section */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dashboard-header h1 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.dashboard-header p {
+  color: #64748b;
+  margin: 0.25rem 0 0;
+}
+
+.btn-refresh {
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-refresh:hover {
+  background: #f1f5f9;
+}
+
+/* 1. Statistics Grid: CSS Grid with auto-fit & minmax */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-left: 4px solid #cbd5e1;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.border-blue { border-left-color: #3b82f6; }
+.border-purple { border-left-color: #a855f7; }
+.border-amber { border-left-color: #f59e0b; }
+.border-green { border-left-color: #10b981; }
+
+.stat-icon {
+  font-size: 2rem;
+  background: #f8fafc;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+.stat-info h3 {
+  font-size: 0.8rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0.25rem 0;
+}
+
+.stat-change {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.stat-change.positive { color: #10b981; }
+
+/* 2. Main content Grid: Multi-column responsive layout */
+.content-main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.section-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.section-card h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem;
+}
+
+/* Activity Items */
+.activity-list { display: flex; flex-direction: column; gap: 1rem; }
+
+.activity-item {
+  padding: 1rem;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.activity-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.user-name { font-weight: 600; font-size: 0.9rem; }
+.dept-badge { background: #e0f2fe; color: #0369a1; font-size: 0.7rem; font-weight: 700; padding: 0.1rem 0.5rem; border-radius: 4px; }
+.action-text { font-size: 0.85rem; margin: 0; color: #475569; }
+.time-stamp { font-size: 0.75rem; color: #94a3b8; }
+
+/* Quick Action Tiles using Flexbox wrapping */
+.config-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.action-tile {
+  flex: 1 1 140px;
+  background: #f1f5f9;
+  border: none;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #334155;
+  text-align: center;
+}
+
+.action-tile:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* RESPONSIVE BREAKPOINTS */
+
+/* Tablet (Small Desktop) */
+@media screen and (max-width: 1024px) {
+  .content-main-grid {
+    grid-template-columns: 1.5fr 1fr;
+  }
+}
+
+/* Mobile / Small Tablet */
+@media screen and (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .content-main-grid {
+    grid-template-columns: 1fr; /* Stack main sections */
+  }
+
+  .dashboard-header h1 { font-size: 1.5rem; }
+  
+  .stat-card {
+    padding: 1.25rem;
+  }
+}
+
+/* Extra Small (Mobile Phones) */
+@media screen and (max-width: 480px) {
+  .dashboard-wrapper {
+    padding: 1.5rem 1rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr; /* Force 1 column on tiny screens */
+  }
+
+  .action-tile {
+    flex: 1 1 100%; /* Tiles take full width on phone */
+  }
+}
