@@ -1,0 +1,55 @@
+<section class="request-list-container">
+  <div class="page-header">
+    <h1>Workflow Requests</h1>
+    <p class="subtitle">Multi-Tenant Approval Dashboard</p>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading workflow requests...</p>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="error-message">
+      <p>{{ errorMessage }}</p>
+      <button (click)="loadRequests()">Retry</button>
+    </div>
+  }
+
+  @if (requests.length > 0) {
+    <div class="request-grid">
+      @for (req of requests; track req.id) {
+        <div class="request-card">
+          <div class="card-header">
+            <span class="department-badge">{{ req.department }}</span>
+            <span class="priority-badge" [class]="getPriorityClass(req.priority)">
+              {{ req.priority }}
+            </span>
+          </div>
+          <h3>{{ req.title }}</h3>
+          <div class="card-meta">
+            <p><strong>Requested by:</strong> {{ req.requestedBy }}</p>
+            <p><strong>Date:</strong> {{ req.createdAt }}</p>
+            @if (req.approvedBy) {
+              <p><strong>Approved by:</strong> {{ req.approvedBy }}</p>
+            }
+            @if (req.remarks) {
+              <p class="remarks">{{ req.remarks }}</p>
+            }
+          </div>
+          <div class="card-footer">
+            <span class="status-badge" [class]="getStatusClass(req.status)">
+              {{ req.status }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!isLoading() && !errorMessage && requests.length === 0) {
+    <p class="empty-state">No workflow requests found.</p>
+  }
+</section>
