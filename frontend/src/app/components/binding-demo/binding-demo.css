@@ -1,0 +1,180 @@
+.binding-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 120px);
+  background: #f1f5f9;
+  padding: 2rem;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.settings-card {
+  background: white;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.1);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.card-header {
+  padding: 2rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.card-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0;
+  color: #0f172a;
+}
+
+.subtitle {
+  margin: 0.5rem 0 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.settings-body {
+  padding: 2rem;
+}
+
+.field-group {
+  margin-bottom: 2rem;
+}
+
+.field-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0 1rem;
+  transition: border-color 0.2s;
+}
+
+.input-wrapper:focus-within {
+  border-color: #6366f1;
+}
+
+.input-wrapper input {
+  flex: 1;
+  border: none;
+  padding: 0.85rem 0;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 1rem;
+  outline: none;
+}
+
+.preview-url {
+  color: #94a3b8;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.preview-text {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: #6366f1;
+}
+
+code {
+  background: #f5f3ff;
+  color: #6d28d9;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+}
+
+.status-panel {
+  background: #f8fafc;
+  padding: 1.25rem;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-label {
+  font-size: 0.85rem;
+  color: #64748b;
+  display: block;
+}
+
+.status-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #ef4444;
+}
+
+.status-value.active {
+  color: #10b981;
+}
+
+/* Actions */
+.btn {
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-toggle {
+  background: #0f172a;
+  color: white;
+  padding: 0.6rem 1rem;
+}
+
+.btn-toggle:hover {
+  background: #334155;
+}
+
+.card-footer {
+  background: #f8fafc;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f1f5f9;
+}
+
+.save-info p {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-primary {
+  background: #6366f1;
+  color: white;
+  padding: 0.75rem 1.5rem;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #4f46e5;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}

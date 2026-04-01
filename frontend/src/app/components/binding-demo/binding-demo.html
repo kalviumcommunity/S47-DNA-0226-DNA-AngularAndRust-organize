@@ -1,0 +1,47 @@
+<div class="binding-container">
+  <div class="settings-card">
+    <header class="card-header">
+      <!-- 1. Interpolation: {{ title }} and {{ tenantId }} -->
+      <h2>{{ title }}</h2>
+      <p class="subtitle">Managing Tenant ID: <strong>#{{ tenantId }}</strong></p>
+    </header>
+
+    <div class="settings-body">
+      <!-- 4. Two-Way Binding: [(ngModel)] -->
+      <div class="field-group">
+        <label>Tenant Subdomain</label>
+        <div class="input-wrapper">
+          <input type="text" [(ngModel)]="subdomain" placeholder="Enter subdomain" [disabled]="isSaving" />
+          <span class="preview-url">.itganize.com</span>
+        </div>
+        <p class="preview-text">Live Preview: <code>https://{{ subdomain }}.itganize.com</code></p>
+      </div>
+
+      <div class="status-panel">
+        <div class="status-info">
+          <span class="status-label">Environment Status:</span>
+          <span class="status-value" [class.active]="isActive">{{ isActive ? 'Active' : 'Inactive' }}</span>
+        </div>
+        
+        <!-- 3. Event Binding: (click) -->
+        <button class="btn btn-toggle" (click)="toggleStatus()">
+          {{ isActive ? 'Pause Service' : 'Resume Service' }}
+        </button>
+      </div>
+    </div>
+
+    <footer class="card-footer">
+      <div class="save-info">
+        <p>Last change detected: {{ lastSaved }}</p>
+      </div>
+
+      <!-- 2. Property Binding: [disabled] and [src] -->
+      <div class="footer-actions">
+        <button class="btn btn-primary" (click)="saveChanges()" [disabled]="isSaving">
+          {{ isSaving ? 'Saving...' : 'Commit Changes' }}
+        </button>
+        <img [src]="statusIcon" alt="OK" width="24" height="24" *ngIf="!isSaving" />
+      </div>
+    </footer>
+  </div>
+</div>
