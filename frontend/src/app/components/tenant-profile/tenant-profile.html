@@ -1,0 +1,89 @@
+<div class="profile-container">
+  <app-card 
+    cardTitle="Institutional Profile" 
+    subtitle="Manage tenant branding and contact information"
+    accentColor="blue">
+    
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Institution Name -->
+      <div class="form-group">
+        <label for="institutionName">Institution Name</label>
+        <input 
+          type="text" id="institutionName" 
+          formControlName="institutionName" 
+          placeholder="e.g. Imperial University"
+          [class.invalid]="shouldShowError('institutionName')" />
+        
+        <div *ngIf="shouldShowError('institutionName')" class="error-feedback">
+          <small *ngIf="f['institutionName'].errors?.['required']">Institution name is required.</small>
+          <small *ngIf="f['institutionName'].errors?.['minlength']">Name must be at least 3 characters.</small>
+        </div>
+      </div>
+
+      <!-- Principal Email -->
+      <div class="form-group">
+        <label for="principalEmail">Principal Contact Email</label>
+        <input 
+          type="email" id="principalEmail" 
+          formControlName="principalEmail" 
+          placeholder="admin@university.edu"
+          [class.invalid]="shouldShowError('principalEmail')" />
+        
+        <div *ngIf="shouldShowError('principalEmail')" class="error-feedback">
+          <small *ngIf="f['principalEmail'].errors?.['required']">Contact email is required.</small>
+          <small *ngIf="f['principalEmail'].errors?.['email']">Please enter a valid institutional email.</small>
+        </div>
+      </div>
+
+      <!-- Phone Number -->
+      <div class="form-group">
+        <label for="phoneNumber">Official Phone Number</label>
+        <input 
+          type="tel" id="phoneNumber" 
+          formControlName="phoneNumber" 
+          placeholder="e.g. 9876543210"
+          [class.invalid]="shouldShowError('phoneNumber')" />
+        
+        <div *ngIf="shouldShowError('phoneNumber')" class="error-feedback">
+          <small *ngIf="f['phoneNumber'].errors?.['required']">Phone number is required.</small>
+          <small *ngIf="f['phoneNumber'].errors?.['pattern']">Please enter a valid 10-digit number.</small>
+        </div>
+      </div>
+
+      <!-- Admin Password -->
+      <div class="form-group">
+        <label for="adminPassword">Admin Access Password</label>
+        <input 
+          type="password" id="adminPassword" 
+          formControlName="adminPassword" 
+          placeholder="••••••••"
+          [class.invalid]="shouldShowError('adminPassword')" />
+        
+        <div *ngIf="shouldShowError('adminPassword')" class="error-feedback">
+          <small *ngIf="f['adminPassword'].errors?.['required']">A security password is required.</small>
+          <small *ngIf="f['adminPassword'].errors?.['minlength']">Security rule: At least 8 characters required.</small>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <app-button 
+          label="Save Profile" 
+          btnType="primary" 
+          type="submit">
+        </app-button>
+        <app-button 
+          label="Reset Changes" 
+          btnType="text" 
+          (buttonClick)="resetForm()">
+        </app-button>
+      </div>
+    </form>
+
+    <div card-footer class="save-result" *ngIf="submittedData">
+      <h4>🎉 Profile Synchronized</h4>
+      <p>Data successfully validated and prepared for tenant persistence:</p>
+      <pre>{{ submittedData | json }}</pre>
+    </div>
+  </app-card>
+</div>

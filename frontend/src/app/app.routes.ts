@@ -42,6 +42,11 @@ export const routes: Routes = [
       import('./components/workflow-template-form/workflow-template-form').then(m => m.WorkflowTemplateFormComponent)
   },
   {
+    path: 'profile',
+    loadComponent: () =>
+      import('./components/tenant-profile/tenant-profile').then(m => m.TenantProfileComponent) // Fixed name if changed to Component
+  },
+  {
     path: '',
     redirectTo: 'requests',
     pathMatch: 'full'
