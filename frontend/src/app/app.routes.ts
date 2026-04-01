@@ -27,6 +27,11 @@ export const routes: Routes = [
       import('./components/responsive-layout/responsive-layout').then(m => m.ResponsiveLayoutComponent)
   },
   {
+    path: 'binding-demo',
+    loadComponent: () =>
+      import('./components/binding-demo/binding-demo').then(m => m.BindingDemoComponent)
+  },
+  {
     path: '',
     redirectTo: 'requests',
     pathMatch: 'full'
