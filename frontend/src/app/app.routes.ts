@@ -32,6 +32,16 @@ export const routes: Routes = [
       import('./components/binding-demo/binding-demo').then(m => m.BindingDemoComponent)
   },
   {
+    path: 'forms/reactive',
+    loadComponent: () =>
+      import('./components/workflow-reactive-form/workflow-reactive-form').then(m => m.WorkflowReactiveFormComponent)
+  },
+  {
+    path: 'forms/template',
+    loadComponent: () =>
+      import('./components/workflow-template-form/workflow-template-form').then(m => m.WorkflowTemplateFormComponent)
+  },
+  {
     path: '',
     redirectTo: 'requests',
     pathMatch: 'full'
