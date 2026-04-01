@@ -1,0 +1,49 @@
+<div class="alert-center-wrapper">
+  <!-- Shared Badge: Demonstrates reactive sync from the same service instance -->
+  <div class="header-sync">
+    <app-alert-count-badge></app-alert-count-badge>
+  </div>
+
+  <app-card 
+    cardTitle="Institutional Notification Center" 
+    subtitle="Reactive shared state across the portal"
+    accentColor="blue">
+    
+    <div class="controls">
+      <app-button 
+        label="Simulate New Alert" 
+        btnType="primary" 
+        (buttonClick)="addTestAlert()">
+      </app-button>
+      <app-button 
+        label="Delete History" 
+        btnType="text" 
+        (buttonClick)="clearAll()">
+      </app-button>
+    </div>
+
+    <!-- Alert List (Subscription via Async Pipe) -->
+    <div class="alert-list-container">
+      @if ((alerts$ | async); as alerts) {
+        @if (alerts.length > 0) {
+          <ul class="alert-items">
+            @for (alert of alerts; track $index) {
+              <li class="alert-item">
+                <span class="alert-text">{{ alert }}</span>
+                <span class="alert-close" (click)="removeAlert($index)">×</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <div class="empty-state">
+            <p>No active system notifications.</p>
+          </div>
+        }
+      }
+    </div>
+
+    <div card-footer class="state-info">
+      <small>Rule: Last 5 institutional alerts only (shared state constraint).</small>
+    </div>
+  </app-card>
+</div>
