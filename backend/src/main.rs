@@ -1,28 +1,17 @@
-use axum::{routing::get, Json, Router};
-use serde::Serialize;
+mod routes;
+mod handlers;
+mod models;
 
-#[derive(Serialize)]
-struct HealthResponse {
-    status: String,
-    message: String,
-}
-
-async fn health_check() -> Json<HealthResponse> {
-    Json(HealthResponse {
-        status: "ok".to_string(),
-        message: "Rust Axum backend running".to_string(),
-    })
-}
-
-async fn hello() -> &'static str {
-    "Rust Axum backend running"
-}
-
+/// Application entry point.
+/// - Initializes the Axum router by loading all routes from the routes module
+/// - Binds the server to 127.0.0.1:8080
+/// - Starts listening for incoming HTTP requests
+///
+/// main.rs is kept minimal — all routing, business logic, and data models
+/// are organized into their respective modules.
 #[tokio::main]
 async fn main() {
-    let app = Router::new()
-        .route("/", get(hello))
-        .route("/health", get(health_check));
+    let app = routes::create_routes();
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:8080")
         .await
