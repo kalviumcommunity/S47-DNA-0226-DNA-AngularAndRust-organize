@@ -44,7 +44,12 @@ export const routes: Routes = [
   {
     path: 'profile',
     loadComponent: () =>
-      import('./components/tenant-profile/tenant-profile').then(m => m.TenantProfileComponent) // Fixed name if changed to Component
+      import('./components/tenant-profile/tenant-profile').then(m => m.TenantProfileComponent)
+  },
+  {
+    path: 'notifications',
+    loadComponent: () =>
+      import('./components/alert-list/alert-list').then(m => m.AlertListComponent)
   },
   {
     path: '',

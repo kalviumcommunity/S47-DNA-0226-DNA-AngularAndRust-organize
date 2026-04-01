@@ -1,0 +1,4 @@
+<div class="badge-container" [class.has-alerts]="(count$ | async)! > 0">
+  <span class="icon">🔔 Notification Hub:</span>
+  <span class="badge-pill">{{ count$ | async }} Alerts</span>
+</div>
