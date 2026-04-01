@@ -12,23 +12,20 @@
   }
 
   @if (errorMessage) {
-    <div class="error-message">
-      <p>{{ errorMessage }}</p>
-      <button (click)="loadRequests()">Retry</button>
+    <div class="error-container">
+      <p class="error-text">{{ errorMessage }}</p>
+      <app-button label="Retry" (buttonClick)="loadRequests()"></app-button>
     </div>
   }
 
   @if (requests.length > 0) {
     <div class="request-grid">
       @for (req of requests; track req.id) {
-        <div class="request-card">
-          <div class="card-header">
-            <span class="department-badge">{{ req.department }}</span>
-            <span class="priority-badge" [class]="getPriorityClass(req.priority)">
-              {{ req.priority }}
-            </span>
-          </div>
-          <h3>{{ req.title }}</h3>
+        <app-card 
+          [cardTitle]="req.title" 
+          [headerBadge]="req.department"
+          badgeClass="department-badge">
+          
           <div class="card-meta">
             <p><strong>Requested by:</strong> {{ req.requestedBy }}</p>
             <p><strong>Date:</strong> {{ req.createdAt }}</p>
@@ -39,12 +36,16 @@
               <p class="remarks">{{ req.remarks }}</p>
             }
           </div>
-          <div class="card-footer">
+
+          <div card-footer class="card-footer-content">
             <span class="status-badge" [class]="getStatusClass(req.status)">
               {{ req.status }}
             </span>
+            <span class="priority-text" [class]="getPriorityClass(req.priority)">
+              {{ req.priority }} Priority
+            </span>
           </div>
-        </div>
+        </app-card>
       }
     </div>
   }
