@@ -1,10 +1,10 @@
 use axum::{routing::get, Router};
-use crate::handlers;
+use crate::config::AppState;
+use std::sync::Arc;
 
-/// Defines routes for health checks and workflow requests.
-pub fn routes() -> Router {
+/// Health check routes (public, no auth required)
+pub fn routes() -> Router<Arc<AppState>> {
     Router::new()
-        .route("/", get(handlers::health::hello))
-        .route("/health", get(handlers::health::health_check))
-        .route("/api/requests", get(handlers::health::get_requests))
+        .route("/", get(crate::handlers::health::hello))
+        .route("/health", get(crate::handlers::health::health_check))
 }

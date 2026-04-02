@@ -1,59 +1,63 @@
 import { Routes } from '@angular/router';
+import { authGuard, roleGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+  // ── Public routes ──
   {
-    path: 'requests',
-    loadComponent: () =>
-      import('./components/workflow-request-list/workflow-request-list').then(m => m.WorkflowRequestListComponent)
+    path: 'login',
+    loadComponent: () => import('./components/auth/login/login').then(m => m.LoginComponent)
   },
   {
-    path: 'counter',
-    loadComponent: () =>
-      import('./components/counter/counter').then(m => m.CounterComponent)
+    path: 'register',
+    loadComponent: () => import('./components/auth/register/register').then(m => m.RegisterComponent)
   },
-  {
-    path: 'workflow-card',
-    loadComponent: () =>
-      import('./components/workflow-card/workflow-card').then(m => m.WorkflowCardComponent)
-  },
-  {
-    path: 'demo-cli',
-    loadComponent: () =>
-      import('./components/demo-cli/demo-cli').then(m => m.DemoCliComponent)
-  },
-  {
-    path: 'responsive-layout',
-    loadComponent: () =>
-      import('./components/responsive-layout/responsive-layout').then(m => m.ResponsiveLayoutComponent)
-  },
-  {
-    path: 'binding-demo',
-    loadComponent: () =>
-      import('./components/binding-demo/binding-demo').then(m => m.BindingDemoComponent)
-  },
-  {
-    path: 'forms/reactive',
-    loadComponent: () =>
-      import('./components/workflow-reactive-form/workflow-reactive-form').then(m => m.WorkflowReactiveFormComponent)
-  },
-  {
-    path: 'forms/template',
-    loadComponent: () =>
-      import('./components/workflow-template-form/workflow-template-form').then(m => m.WorkflowTemplateFormComponent)
-  },
-  {
-    path: 'profile',
-    loadComponent: () =>
-      import('./components/tenant-profile/tenant-profile').then(m => m.TenantProfileComponent)
-  },
-  {
-    path: 'notifications',
-    loadComponent: () =>
-      import('./components/alert-list/alert-list').then(m => m.AlertListComponent)
-  },
+
+  // ── Protected routes (wrapped in layout) ──
   {
     path: '',
-    redirectTo: 'requests',
-    pathMatch: 'full'
-  }
+    loadComponent: () => import('./components/layout/layout').then(m => m.LayoutComponent),
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./components/dashboard/dashboard').then(m => m.DashboardComponent)
+      },
+      {
+        path: 'submit-request',
+        loadComponent: () => import('./components/requests/submit-request/submit-request').then(m => m.SubmitRequestComponent)
+      },
+      {
+        path: 'my-requests',
+        loadComponent: () => import('./components/requests/my-requests/my-requests').then(m => m.MyRequestsComponent)
+      },
+      {
+        path: 'approvals',
+        loadComponent: () => import('./components/approvals/approvals').then(m => m.ApprovalsComponent),
+        canActivate: [roleGuard('admin', 'manager')]
+      },
+      {
+        path: 'users',
+        loadComponent: () => import('./components/admin/user-management/user-management').then(m => m.UserManagementComponent),
+        canActivate: [roleGuard('admin')]
+      },
+      {
+        path: 'workflows',
+        loadComponent: () => import('./components/admin/workflow-management/workflow-management').then(m => m.WorkflowManagementComponent),
+        canActivate: [roleGuard('admin')]
+      },
+      {
+        path: 'audit-logs',
+        loadComponent: () => import('./components/audit/audit-log/audit-log').then(m => m.AuditLogComponent),
+        canActivate: [roleGuard('admin', 'manager')]
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      }
+    ]
+  },
+
+  // ── Fallback ──
+  { path: '**', redirectTo: 'login' }
 ];

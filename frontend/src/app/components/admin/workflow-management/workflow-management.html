@@ -1,0 +1,88 @@
+<div class="animate-fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Workflows</h1>
+      <p class="page-subtitle">Manage approval workflows for your organization</p>
+    </div>
+    <button class="btn btn-primary" (click)="showCreateForm = !showCreateForm" id="toggle-create-workflow">
+      {{ showCreateForm ? '✕ Cancel' : '+ Create Workflow' }}
+    </button>
+  </div>
+
+  @if (createSuccess) {
+    <div class="alert-success">{{ createSuccess }}</div>
+  }
+
+  <!-- Create Workflow Form -->
+  @if (showCreateForm) {
+    <div class="card create-form animate-fade-in">
+      <h3 class="form-title">Create New Workflow</h3>
+      @if (createError) { <div class="alert-error">{{ createError }}</div> }
+
+      <form (ngSubmit)="createWorkflow()" class="wf-form">
+        <div class="form-group">
+          <label class="form-label">Workflow Name</label>
+          <input class="form-input" [(ngModel)]="newName" name="name" placeholder="e.g. Purchase Order Approval" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <input class="form-input" [(ngModel)]="newDescription" name="description" placeholder="What is this workflow for?" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Approval Steps</label>
+          <div class="steps-builder">
+            @for (step of newSteps; track step.step_order; let i = $index) {
+              <div class="step-row">
+                <span class="step-number">Step {{ step.step_order }}</span>
+                <select class="form-input step-select" [(ngModel)]="step.role_required" [name]="'step-' + i">
+                  <option value="manager">Manager</option>
+                  <option value="admin">Admin</option>
+                </select>
+                <button type="button" class="btn btn-ghost btn-sm" (click)="removeStep(i)" [disabled]="newSteps.length <= 1" title="Remove step">✕</button>
+              </div>
+            }
+            <button type="button" class="btn btn-ghost btn-sm add-step-btn" (click)="addStep()">+ Add Step</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="createLoading || !newName" id="create-workflow-btn">
+          @if (createLoading) { <span class="spinner"></span> }
+          {{ createLoading ? 'Creating...' : 'Create Workflow' }}
+        </button>
+      </form>
+    </div>
+  }
+
+  <!-- Existing Workflows -->
+  @if (loading) {
+    <div class="empty-state"><div class="spinner spinner-lg"></div></div>
+  } @else if (workflows.length === 0) {
+    <div class="empty-state">
+      <div class="empty-state-icon">⚙️</div>
+      <div class="empty-state-text">No workflows configured</div>
+    </div>
+  } @else {
+    <div class="workflows-grid">
+      @for (wf of workflows; track wf.id) {
+        <div class="card workflow-card animate-fade-in">
+          <div class="wf-header">
+            <h3 class="wf-name">{{ wf.name }}</h3>
+            <span class="badge badge-admin">{{ wf.steps.length }} step{{ wf.steps.length === 1 ? '' : 's' }}</span>
+          </div>
+          @if (wf.description) {
+            <p class="wf-desc">{{ wf.description }}</p>
+          }
+          <div class="wf-chain">
+            @for (step of wf.steps; track step.id) {
+              <span class="step-chip">{{ step.role_required | titlecase }}</span>
+              @if (!$last) { <span class="step-arrow">→</span> }
+            }
+          </div>
+          <div class="wf-meta">Created {{ wf.created_at | date:'mediumDate' }}</div>
+        </div>
+      }
+    </div>
+  }
+</div>

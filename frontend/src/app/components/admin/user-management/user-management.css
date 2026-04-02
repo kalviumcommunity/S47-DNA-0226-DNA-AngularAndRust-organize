@@ -1,0 +1,8 @@
+.user-form { display: flex; flex-direction: column; gap: var(--space-md); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+.create-form { max-width: 700px; }
+.role-select { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 8px; font-size: var(--font-xs); font-family: var(--font-family); cursor: pointer; outline: none; }
+.role-select:focus { border-color: var(--accent-primary); }
+.auth-error { background: var(--danger-bg); color: var(--danger); padding: 10px 14px; border-radius: var(--radius-md); font-size: var(--font-sm); margin-bottom: var(--space-md); border: 1px solid rgba(239, 68, 68, 0.2); }
+.success-msg { background: var(--success-bg); color: var(--success); padding: 10px 14px; border-radius: var(--radius-md); font-size: var(--font-sm); margin-bottom: var(--space-md); border: 1px solid rgba(16, 185, 129, 0.2); }
+@media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }

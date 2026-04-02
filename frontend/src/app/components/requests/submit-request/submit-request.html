@@ -1,0 +1,55 @@
+<div class="animate-fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Submit Request</h1>
+      <p class="page-subtitle">Create a new workflow request</p>
+    </div>
+  </div>
+
+  <div class="card form-card">
+    @if (error) { <div class="alert-error">{{ error }}</div> }
+    @if (success) { <div class="alert-success">{{ success }}</div> }
+
+    <form (ngSubmit)="onSubmit()" class="request-form">
+      <div class="form-group">
+        <label class="form-label" for="sr-workflow">Workflow Type</label>
+        <select id="sr-workflow" class="form-input" [(ngModel)]="selectedWorkflow" name="workflow" required>
+          <option value="" disabled>Select a workflow</option>
+          @for (wf of workflows; track wf.id) {
+            <option [value]="wf.id">{{ wf.name }}</option>
+          }
+        </select>
+      </div>
+
+      @if (selectedWorkflowInfo) {
+        <div class="workflow-info">
+          <div class="workflow-desc">{{ selectedWorkflowInfo.description }}</div>
+          <div class="workflow-steps-preview">
+            <span class="steps-label">Approval chain:</span>
+            @for (step of selectedWorkflowInfo.steps; track step.id) {
+              <span class="step-chip">Step {{ step.step_order }}: {{ step.role_required | titlecase }}</span>
+              @if (!$last) { <span class="step-arrow">→</span> }
+            }
+          </div>
+        </div>
+      }
+
+      <div class="form-group">
+        <label class="form-label" for="sr-title">Request Title</label>
+        <input id="sr-title" class="form-input" type="text" [(ngModel)]="title" name="title" placeholder="e.g. Annual Leave – 5 Days" required />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="sr-desc">Description (optional)</label>
+        <textarea id="sr-desc" class="form-input" rows="4" [(ngModel)]="description" name="description" placeholder="Provide details for your request..."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-lg" [disabled]="loading || !selectedWorkflow || !title" id="submit-request-btn">
+          @if (loading) { <span class="spinner"></span> }
+          {{ loading ? 'Submitting...' : 'Submit Request' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

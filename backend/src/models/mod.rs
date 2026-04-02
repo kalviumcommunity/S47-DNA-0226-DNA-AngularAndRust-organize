@@ -1,5 +1,23 @@
-// The models module contains typed structs used across the application.
-// These structs define the shape of API requests, responses, and database records.
-// Using typed models ensures compile-time safety and clear API contracts.
-
 pub mod health;
+pub mod auth;
+pub mod user;
+pub mod tenant;
+pub mod workflow;
+pub mod request;
+pub mod audit;
+
+use serde::Serialize;
+
+/// Standard API error response
+#[derive(Serialize)]
+pub struct ApiError {
+    pub error: String,
+}
+
+impl ApiError {
+    pub fn new(msg: &str) -> Self {
+        ApiError {
+            error: msg.to_string(),
+        }
+    }
+}

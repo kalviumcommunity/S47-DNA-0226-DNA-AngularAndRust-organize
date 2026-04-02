@@ -1,5 +1,6 @@
-// The handlers module contains the business logic layer.
-// Each sub-module handles requests for a specific domain.
-// Handlers receive parsed requests, execute logic, and return responses.
-
 pub mod health;
+pub mod auth;
+pub mod users;
+pub mod workflows;
+pub mod requests;
+pub mod audit;
