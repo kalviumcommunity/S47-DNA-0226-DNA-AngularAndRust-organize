@@ -1,0 +1,81 @@
+<div class="animate-fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">User Management</h1>
+      <p class="page-subtitle">Manage users in your organization</p>
+    </div>
+    <button class="btn btn-primary" (click)="showCreateForm = !showCreateForm" id="toggle-create-user">
+      {{ showCreateForm ? '✕ Cancel' : '+ Add User' }}
+    </button>
+  </div>
+
+  @if (createSuccess) {
+    <div class="success-msg">{{ createSuccess }}</div>
+  }
+
+  <!-- Create User Form -->
+  @if (showCreateForm) {
+    <div class="card create-form animate-fade-in" style="margin-bottom: var(--space-xl);">
+      <h3 style="margin-bottom: var(--space-md); font-size: var(--font-lg);">Create New User</h3>
+      @if (createError) { <div class="auth-error">{{ createError }}</div> }
+      <form (ngSubmit)="createUser()" class="user-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input class="form-input" [(ngModel)]="newName" name="name" placeholder="John Doe" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" type="email" [(ngModel)]="newEmail" name="email" placeholder="john@institution.edu" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input class="form-input" type="password" [(ngModel)]="newPassword" name="password" placeholder="Minimum 6 characters" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role</label>
+            <select class="form-input" [(ngModel)]="newRole" name="role">
+              <option value="employee">Employee</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="createLoading || !newName || !newEmail || !newPassword" id="create-user-btn">
+          @if (createLoading) { <span class="spinner"></span> }
+          {{ createLoading ? 'Creating...' : 'Create User' }}
+        </button>
+      </form>
+    </div>
+  }
+
+  <!-- Users Table -->
+  @if (loading) {
+    <div class="empty-state"><div class="spinner spinner-lg"></div></div>
+  } @else {
+    <div class="table-container">
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead>
+        <tbody>
+          @for (user of users; track user.id) {
+            <tr class="animate-fade-in">
+              <td style="color: var(--text-primary); font-weight: 500;">{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td><span class="badge" [ngClass]="'badge-' + user.role">{{ user.role }}</span></td>
+              <td>{{ user.created_at | date:'mediumDate' }}</td>
+              <td>
+                <select class="role-select" [ngModel]="user.role" (ngModelChange)="updateRole(user.id, $event)" name="role-select">
+                  <option value="employee">Employee</option>
+                  <option value="manager">Manager</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

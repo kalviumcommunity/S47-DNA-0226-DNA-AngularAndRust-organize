@@ -1,0 +1,67 @@
+<div class="animate-fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Approval Queue</h1>
+      <p class="page-subtitle">Review and decide on pending requests</p>
+    </div>
+  </div>
+
+  @if (successMsg) {
+    <div class="success-msg">{{ successMsg }}</div>
+  }
+
+  @if (loading) {
+    <div class="empty-state"><div class="spinner spinner-lg"></div></div>
+  } @else if (pendingRequests.length === 0) {
+    <div class="empty-state">
+      <div class="empty-state-icon">✅</div>
+      <div class="empty-state-text">No pending approvals</div>
+      <p style="color: var(--text-muted); font-size: var(--font-sm);">All caught up!</p>
+    </div>
+  } @else {
+    <div class="approval-list">
+      @for (req of pendingRequests; track req.id) {
+        <div class="approval-card card animate-fade-in">
+          <div class="approval-header">
+            <div>
+              <h3 class="approval-title">{{ req.title }}</h3>
+              <p class="approval-meta">
+                Submitted by <strong>{{ req.creatorName }}</strong> · {{ req.workflowName }} · Step {{ req.currentStep }}
+              </p>
+            </div>
+            <span class="badge badge-pending">Pending</span>
+          </div>
+
+          @if (req.description) {
+            <p class="approval-desc">{{ req.description }}</p>
+          }
+
+          <div class="approval-meta-row">
+            <span>📅 {{ req.createdAt | date:'mediumDate' }}</span>
+          </div>
+
+          @if (activeRequestId === req.id) {
+            <div class="comment-box">
+              <textarea class="form-input" rows="2" [(ngModel)]="comment" placeholder="Add a comment (optional)..." name="comment"></textarea>
+            </div>
+          }
+
+          <div class="approval-actions">
+            <button class="btn btn-ghost btn-sm" (click)="showCommentBox(req.id)">
+              💬 {{ activeRequestId === req.id ? 'Hide Comment' : 'Add Comment' }}
+            </button>
+            <div class="action-buttons">
+              <button class="btn btn-success btn-sm" (click)="decide(req.id, 'approved')" [disabled]="actionLoading === req.id" id="approve-{{req.id}}">
+                @if (actionLoading === req.id) { <span class="spinner"></span> }
+                ✓ Approve
+              </button>
+              <button class="btn btn-danger btn-sm" (click)="decide(req.id, 'rejected')" [disabled]="actionLoading === req.id" id="reject-{{req.id}}">
+                ✗ Reject
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

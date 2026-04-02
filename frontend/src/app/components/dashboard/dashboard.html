@@ -1,0 +1,110 @@
+<div class="animate-fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-subtitle">{{ api.currentUser()?.tenantName }} — {{ api.userRole() | titlecase }} View</p>
+    </div>
+    <a routerLink="/submit-request" class="btn btn-primary" id="dash-submit-btn">
+      + New Request
+    </a>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Requests</div>
+      <div class="stat-value">{{ totalRequests }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pending</div>
+      <div class="stat-value" style="background: linear-gradient(135deg, #f59e0b, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ pendingCount }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Approved</div>
+      <div class="stat-value" style="background: linear-gradient(135deg, #10b981, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ approvedCount }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Rejected</div>
+      <div class="stat-value" style="background: linear-gradient(135deg, #ef4444, #dc2626); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ rejectedCount }}</div>
+    </div>
+  </div>
+
+  <!-- Pending Approvals (Manager/Admin) -->
+  @if (api.userRole() !== 'employee' && pendingApprovals.length > 0) {
+    <div class="section">
+      <div class="section-header">
+        <h2>⏳ Pending Your Approval</h2>
+        <a routerLink="/approvals" class="btn btn-ghost btn-sm">View All →</a>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Submitted By</th>
+              <th>Workflow</th>
+              <th>Step</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (req of pendingApprovals.slice(0, 5); track req.id) {
+              <tr class="animate-fade-in">
+                <td style="color: var(--text-primary); font-weight: 500;">{{ req.title }}</td>
+                <td>{{ req.creatorName }}</td>
+                <td>{{ req.workflowName }}</td>
+                <td>Step {{ req.currentStep }}</td>
+                <td>{{ req.createdAt | date:'mediumDate' }}</td>
+                <td><a routerLink="/approvals" class="btn btn-primary btn-sm">Review</a></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- Recent Requests -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📋 Recent Requests</h2>
+      <a routerLink="/my-requests" class="btn btn-ghost btn-sm">View All →</a>
+    </div>
+
+    @if (loading) {
+      <div class="empty-state"><div class="spinner spinner-lg"></div></div>
+    } @else if (requests.length === 0) {
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <div class="empty-state-text">No requests yet</div>
+        <a routerLink="/submit-request" class="btn btn-primary">Submit Your First Request</a>
+      </div>
+    } @else {
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Workflow</th>
+              <th>Status</th>
+              <th>Step</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (req of requests.slice(0, 8); track req.id) {
+              <tr class="animate-fade-in">
+                <td style="color: var(--text-primary); font-weight: 500;">{{ req.title }}</td>
+                <td>{{ req.workflowName }}</td>
+                <td><span class="badge" [ngClass]="'badge-' + req.status">{{ req.status }}</span></td>
+                <td>Step {{ req.currentStep }}</td>
+                <td>{{ req.createdAt | date:'mediumDate' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
