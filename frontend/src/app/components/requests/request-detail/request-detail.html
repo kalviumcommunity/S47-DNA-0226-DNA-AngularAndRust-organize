@@ -1,0 +1,150 @@
+<div class="animate-fade-in">
+  <!-- Header with Back Navigation -->
+  <div class="page-header">
+    <div class="header-left">
+      <button class="btn btn-ghost btn-sm back-btn" (click)="goBack()" id="detail-back-btn">
+        ← Back to Dashboard
+      </button>
+      <div>
+        <h1 class="page-title">Request Details</h1>
+        <p class="page-subtitle">Viewing request #{{ requestId }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="empty-state">
+      <div class="spinner spinner-lg"></div>
+      <p style="margin-top: var(--space-md); color: var(--text-muted);">Loading request details...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (error) {
+    <div class="error-card card">
+      <div class="empty-state">
+        <div class="empty-state-icon">⚠️</div>
+        <div class="empty-state-text">{{ error }}</div>
+        <div class="error-actions">
+          <button class="btn btn-primary" (click)="goBack()">Go to Dashboard</button>
+          <a routerLink="/my-requests" class="btn btn-ghost">View All Requests</a>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Request Details -->
+  @else if (request) {
+    <div class="detail-layout">
+      <!-- Main Info Card -->
+      <div class="detail-main card">
+        <div class="detail-title-row">
+          <h2 class="detail-title">{{ request.title }}</h2>
+          <span class="badge" [ngClass]="getStatusClass(request.status)">{{ request.status }}</span>
+        </div>
+
+        @if (request.description) {
+          <p class="detail-description">{{ request.description }}</p>
+        }
+
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="detail-label">Workflow</span>
+            <span class="detail-value">{{ request.workflowName }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Current Step</span>
+            <span class="detail-value">Step {{ request.currentStep }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Submitted By</span>
+            <span class="detail-value">{{ request.creatorName }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Created On</span>
+            <span class="detail-value">{{ request.createdAt | date:'fullDate' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Last Updated</span>
+            <span class="detail-value">{{ request.updatedAt | date:'fullDate' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Request ID</span>
+            <span class="detail-value detail-mono">{{ request.id }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Workflow ID</span>
+            <span class="detail-value detail-mono">{{ request.workflowId }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Tenant ID</span>
+            <span class="detail-value detail-mono">{{ request.tenantId }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Sidebar -->
+      <div class="detail-sidebar">
+        <!-- Status Timeline -->
+        <div class="timeline-card card">
+          <h3 class="sidebar-title">Status Timeline</h3>
+          <div class="timeline">
+            <div class="timeline-item completed">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <span class="timeline-label">Submitted</span>
+                <span class="timeline-date">{{ request.createdAt | date:'mediumDate' }}</span>
+              </div>
+            </div>
+            @if (request.status === 'pending') {
+              <div class="timeline-item active">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                  <span class="timeline-label">Under Review</span>
+                  <span class="timeline-date">Step {{ request.currentStep }}</span>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                  <span class="timeline-label">Decision</span>
+                  <span class="timeline-date">Awaiting</span>
+                </div>
+              </div>
+            } @else {
+              <div class="timeline-item completed">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                  <span class="timeline-label">Reviewed</span>
+                  <span class="timeline-date">All steps</span>
+                </div>
+              </div>
+              <div class="timeline-item completed">
+                <div class="timeline-dot" [ngClass]="request.status === 'approved' ? 'dot-success' : 'dot-danger'"></div>
+                <div class="timeline-content">
+                  <span class="timeline-label">{{ request.status | titlecase }}</span>
+                  <span class="timeline-date">{{ request.updatedAt | date:'mediumDate' }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="nav-card card">
+          <h3 class="sidebar-title">Navigate</h3>
+          <a routerLink="/my-requests" class="nav-link" id="detail-to-requests">
+            📋 All My Requests
+          </a>
+          <a routerLink="/dashboard" class="nav-link" id="detail-to-dashboard">
+            📊 Dashboard
+          </a>
+          <a routerLink="/submit-request" class="nav-link" id="detail-to-submit">
+            📝 Submit New Request
+          </a>
+        </div>
+      </div>
+    </div>
+  }
+</div>

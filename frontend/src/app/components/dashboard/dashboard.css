@@ -12,3 +12,12 @@
   font-weight: 600;
   color: var(--text-primary);
 }
+
+/* ── Clickable rows for navigation to detail page ── */
+.clickable-row {
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.clickable-row:hover td {
+  background: var(--bg-surface-hover) !important;
+}

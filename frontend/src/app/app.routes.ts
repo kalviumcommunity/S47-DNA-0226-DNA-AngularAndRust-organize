@@ -4,6 +4,10 @@ import { authGuard, roleGuard } from './guards/auth.guard';
 export const routes: Routes = [
   // ── Public routes ──
   {
+    path: 'home',
+    loadComponent: () => import('./components/home/home').then(m => m.HomeComponent)
+  },
+  {
     path: 'login',
     loadComponent: () => import('./components/auth/login/login').then(m => m.LoginComponent)
   },
@@ -23,10 +27,21 @@ export const routes: Routes = [
         loadComponent: () => import('./components/dashboard/dashboard').then(m => m.DashboardComponent)
       },
       {
+        // Route parameter: :id
+        // The RequestDetailComponent reads this param via ActivatedRoute.paramMap
+        path: 'request/:id',
+        loadComponent: () => import('./components/requests/request-detail/request-detail').then(m => m.RequestDetailComponent)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./components/profile/profile').then(m => m.ProfileComponent)
+      },
+      {
         path: 'submit-request',
         loadComponent: () => import('./components/requests/submit-request/submit-request').then(m => m.SubmitRequestComponent)
       },
       {
+        // Supports query parameters: ?status=pending|approved|rejected
         path: 'my-requests',
         loadComponent: () => import('./components/requests/my-requests/my-requests').then(m => m.MyRequestsComponent)
       },
@@ -59,5 +74,5 @@ export const routes: Routes = [
   },
 
   // ── Fallback ──
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: 'home' }
 ];

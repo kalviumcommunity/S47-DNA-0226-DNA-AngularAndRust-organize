@@ -99,6 +99,12 @@ export class ApiService {
     return this.http.get<AuditLog[]>(`${API}/audit-logs`);
   }
 
+  // ── Single Request by ID ──
+
+  getRequestById(id: string): Observable<WorkflowRequest> {
+    return this.http.get<WorkflowRequest>(`${API}/requests/${id}`);
+  }
+
   // ── Helpers ──
 
   private saveAuth(res: AuthResponse): void {
