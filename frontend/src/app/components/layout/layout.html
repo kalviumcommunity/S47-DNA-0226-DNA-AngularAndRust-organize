@@ -49,16 +49,25 @@
           <span class="nav-label" *ngIf="!sidebarCollapsed">Audit Logs</span>
         </a>
       }
+
+      <!-- Profile link in sidebar -->
+      <div class="nav-divider" *ngIf="!sidebarCollapsed"></div>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-item" id="nav-profile">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">My Profile</span>
+      </a>
     </nav>
 
     <div class="sidebar-footer">
-      <div class="user-info" *ngIf="!sidebarCollapsed">
-        <div class="user-avatar">{{ api.currentUser()?.name?.charAt(0)?.toUpperCase() }}</div>
-        <div class="user-details">
-          <span class="user-name">{{ api.currentUser()?.name }}</span>
-          <span class="user-role badge" [ngClass]="'badge-' + api.userRole()">{{ api.userRole() }}</span>
+      <a routerLink="/profile" class="user-info-link" *ngIf="!sidebarCollapsed">
+        <div class="user-info">
+          <div class="user-avatar">{{ api.currentUser()?.name?.charAt(0)?.toUpperCase() }}</div>
+          <div class="user-details">
+            <span class="user-name">{{ api.currentUser()?.name }}</span>
+            <span class="user-role badge" [ngClass]="'badge-' + api.userRole()">{{ api.userRole() }}</span>
+          </div>
         </div>
-      </div>
+      </a>
       <button class="btn btn-ghost btn-sm" (click)="api.logout()" id="logout-btn">
         <span>🚪</span>
         <span *ngIf="!sidebarCollapsed">Logout</span>

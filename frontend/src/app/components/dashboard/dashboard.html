@@ -50,13 +50,13 @@
           </thead>
           <tbody>
             @for (req of pendingApprovals.slice(0, 5); track req.id) {
-              <tr class="animate-fade-in">
+              <tr class="animate-fade-in clickable-row" (click)="viewRequest(req)">
                 <td style="color: var(--text-primary); font-weight: 500;">{{ req.title }}</td>
                 <td>{{ req.creatorName }}</td>
                 <td>{{ req.workflowName }}</td>
                 <td>Step {{ req.currentStep }}</td>
                 <td>{{ req.createdAt | date:'mediumDate' }}</td>
-                <td><a routerLink="/approvals" class="btn btn-primary btn-sm">Review</a></td>
+                <td><a routerLink="/approvals" class="btn btn-primary btn-sm" (click)="$event.stopPropagation()">Review</a></td>
               </tr>
             }
           </tbody>
@@ -94,8 +94,8 @@
           </thead>
           <tbody>
             @for (req of requests.slice(0, 8); track req.id) {
-              <tr class="animate-fade-in">
-                <td style="color: var(--text-primary); font-weight: 500;">{{ req.title }}</td>
+              <tr class="animate-fade-in clickable-row" (click)="viewRequest(req)" id="request-row-{{req.id}}">
+                <td style="color: var(--accent-primary-hover); font-weight: 500; cursor: pointer;">{{ req.title }}</td>
                 <td>{{ req.workflowName }}</td>
                 <td><span class="badge" [ngClass]="'badge-' + req.status">{{ req.status }}</span></td>
                 <td>Step {{ req.currentStep }}</td>

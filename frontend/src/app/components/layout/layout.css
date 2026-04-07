@@ -92,6 +92,24 @@
   text-align: center;
 }
 
+/* ── Nav Divider ── */
+.nav-divider {
+  height: 1px;
+  background: var(--border);
+  margin: var(--space-sm) 0;
+}
+
+/* ── User Info Link ── */
+.user-info-link {
+  text-decoration: none;
+  display: block;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+.user-info-link:hover {
+  background: var(--bg-surface);
+}
+
 /* ── Sidebar Footer ── */
 .sidebar-footer {
   padding: var(--space-md) var(--space-lg);

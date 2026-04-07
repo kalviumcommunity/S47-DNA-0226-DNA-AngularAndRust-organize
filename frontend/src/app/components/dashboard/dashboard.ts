@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { RequestStateService } from '../../services/request-state.service';
 import { WorkflowRequest } from '../../models/api.models';
 
 @Component({
@@ -22,12 +23,18 @@ export class DashboardComponent implements OnInit {
   get approvedCount() { return this.requests.filter(r => r.status === 'approved').length; }
   get rejectedCount() { return this.requests.filter(r => r.status === 'rejected').length; }
 
-  constructor(public api: ApiService) {}
+  constructor(
+    public api: ApiService,
+    private requestState: RequestStateService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.api.getRequests().subscribe({
       next: (data: WorkflowRequest[]) => {
         this.requests = Array.isArray(data) ? data : [];
+        // Cache requests in the state service so Detail page can access them
+        this.requestState.setRequests(this.requests);
         this.loading = false;
       },
       error: (_err: any) => {
@@ -45,5 +52,15 @@ export class DashboardComponent implements OnInit {
         error: () => { this.pendingApprovals = []; }
       });
     }
+  }
+
+  /**
+   * Programmatic navigation to the request detail page.
+   * Stores the request in RequestStateService before navigating,
+   * so the Detail component can access it without re-fetching.
+   */
+  viewRequest(request: WorkflowRequest): void {
+    this.requestState.selectRequest(request);
+    this.router.navigate(['/request', request.id]);
   }
 }
