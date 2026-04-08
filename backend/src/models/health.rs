@@ -1,10 +1,12 @@
 use serde::Serialize;
 
-/// Represents the JSON response returned by the /health endpoint.
+/// Represents the JSON response returned by the GET /health endpoint.
+/// Does not depend on any external services — always returns current server status.
 #[derive(Serialize)]
 pub struct HealthResponse {
     pub status: String,
     pub message: String,
+    pub timestamp: String,
 }
 
 /// Represents a WorkflowRequest entity returned by the /api/requests endpoint.

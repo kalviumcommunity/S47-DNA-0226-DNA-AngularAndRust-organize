@@ -9,10 +9,10 @@ mod models;
 mod middleware;
 
 /// Application entry point.
-/// - Loads environment config
+/// - Loads environment config (.env file)
 /// - Initializes SQLite database and schema
 /// - Creates Axum router with all routes and CORS middleware
-/// - Starts the server on 127.0.0.1:8080
+/// - Starts the server on a configurable port (default: 8080)
 #[tokio::main]
 async fn main() {
     // Initialize application state (loads .env, connects to DB)
@@ -29,12 +29,17 @@ async fn main() {
 
     let app = routes::create_routes(state).layer(cors);
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:8080")
+    // Configurable port via PORT environment variable
+    let port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
+    let addr = format!("127.0.0.1:{}", port);
+
+    let listener = tokio::net::TcpListener::bind(&addr)
         .await
         .unwrap();
 
-    println!("🚀 Backend server running on http://127.0.0.1:8080");
+    println!("🚀 Backend server running on http://{}", addr);
     println!("📋 API endpoints:");
+    println!("   GET  /health                    ← Health check (no auth)");
     println!("   POST /api/auth/register-tenant");
     println!("   POST /api/auth/login");
     println!("   GET  /api/auth/me");
@@ -50,3 +55,4 @@ async fn main() {
 
     axum::serve(listener, app).await.unwrap();
 }
+
