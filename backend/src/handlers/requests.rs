@@ -219,12 +219,11 @@ pub async fn decide_request(
         );
     }
 
-    if !["approved", "rejected"].contains(&body.decision.as_str()) {
-        return (
-            StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": "Decision must be 'approved' or 'rejected'"})),
-        );
-    }
+    // By enforcing body.decision to be `ApprovalDecision` enum directly, 
+    // we let Axum and Serde automatically reject invalid string values with a 400 response!
+    // No more manual string validation needed.
+    
+    let decision_str = if body.decision == ApprovalDecision::Approved { "approved" } else { "rejected" };
 
     // Fetch the request
     let request = sqlx::query_as::<_, Request>(
@@ -287,7 +286,7 @@ pub async fn decide_request(
     .bind(&request_id)
     .bind(request.current_step)
     .bind(&auth.user_id)
-    .bind(&body.decision)
+    .bind(decision_str)
     .bind(&body.comment)
     .execute(&state.db)
     .await
@@ -296,7 +295,7 @@ pub async fn decide_request(
     let old_status = request.status.clone();
     let (new_status, new_step);
 
-    if body.decision == "rejected" {
+    if body.decision == ApprovalDecision::Rejected {
         new_status = "rejected".to_string();
         new_step = request.current_step;
     } else {
@@ -340,7 +339,7 @@ pub async fn decide_request(
     .bind(&auth.tenant_id)
     .bind(&auth.user_id)
     .bind(&auth.name)
-    .bind(if body.decision == "approved" { "REQUEST_APPROVED" } else { "REQUEST_REJECTED" })
+    .bind(if body.decision == ApprovalDecision::Approved { "REQUEST_APPROVED" } else { "REQUEST_REJECTED" })
     .bind("request")
     .bind(&request_id)
     .bind(&old_status)
@@ -348,7 +347,7 @@ pub async fn decide_request(
     .bind(format!(
         "{} {} request '{}'. Comment: {}",
         &auth.name,
-        &body.decision,
+        decision_str,
         &request.title,
         body.comment.as_deref().unwrap_or("none")
     ))
@@ -358,7 +357,7 @@ pub async fn decide_request(
     (
         StatusCode::OK,
         Json(serde_json::json!({
-            "message": format!("Request {}", body.decision),
+            "message": format!("Request {}", decision_str),
             "requestId": request_id,
             "newStatus": new_status,
             "currentStep": new_step

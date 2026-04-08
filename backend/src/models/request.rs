@@ -22,20 +22,28 @@ pub struct CreateRequestPayload {
     pub description: Option<String>,
 }
 
+// Strongly typed Enum for API safety
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum ApprovalDecision {
+    Approved,
+    Rejected,
+}
+
 #[derive(Serialize, FromRow, Clone)]
 pub struct Approval {
     pub id: String,
     pub request_id: String,
     pub step_order: i32,
     pub approved_by: String,
-    pub decision: String,
+    pub decision: String, // Kept as string for DB compatibility, but typed for API rules
     pub comment: Option<String>,
     pub created_at: String,
 }
 
 #[derive(Deserialize)]
 pub struct ApprovalPayload {
-    pub decision: String, // "approved" or "rejected"
+    pub decision: ApprovalDecision, // API boundary strictly enforces valid values!
     pub comment: Option<String>,
 }
 
