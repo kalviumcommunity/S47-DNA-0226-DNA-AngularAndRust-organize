@@ -1,16 +1,21 @@
 use axum::Json;
 use crate::models::health::{HealthResponse, WorkflowRequest};
 
+/// GET /
 /// Returns a simple string confirming the backend is running.
 pub async fn hello() -> &'static str {
     "Rust Axum backend running"
 }
 
-/// Returns a JSON health check response.
+/// GET /health
+/// Returns a JSON health check response with server status and timestamp.
+/// This endpoint does NOT depend on any external services (no DB, no auth).
+/// Used by the Angular frontend to verify backend availability before making API calls.
 pub async fn health_check() -> Json<HealthResponse> {
     Json(HealthResponse {
         status: "ok".to_string(),
-        message: "Rust Axum backend running".to_string(),
+        message: "Rust Axum backend is healthy".to_string(),
+        timestamp: chrono::Utc::now().to_rfc3339(),
     })
 }
 
