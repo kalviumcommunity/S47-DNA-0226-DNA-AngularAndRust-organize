@@ -19,6 +19,12 @@ export class ApiService {
   isAuthenticated = computed(() => !!this.currentUser());
   userRole = computed(() => this.currentUser()?.role ?? null);
 
+  /**
+   * isLoggedIn — used by route guards to check authentication state.
+   * Returns true if a user session exists (token + user data in localStorage).
+   */
+  isLoggedIn = this.isAuthenticated;
+
   constructor(private http: HttpClient, private router: Router) {}
 
   // ── Auth ──
@@ -33,6 +39,26 @@ export class ApiService {
     return this.http.post<AuthResponse>(`${API}/auth/login`, data).pipe(
       tap(res => this.saveAuth(res))
     );
+  }
+
+  /**
+   * demoLogin — Toggle auth state for demonstration purposes.
+   * Sets a mock user so the route guard allows access without a real backend.
+   */
+  demoLogin(): void {
+    const mockUser: UserInfo = {
+      id: 'demo-001',
+      name: 'Darshan',
+      email: 'darshan@demo.com',
+      role: 'admin',
+      tenantId: 'tenant-001',
+      tenantName: 'Demo Organisation'
+    };
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(this.tokenKey, 'demo-token');
+      localStorage.setItem(this.userKey, JSON.stringify(mockUser));
+    }
+    this.currentUser.set(mockUser);
   }
 
   createUser(data: CreateUserRequest): Observable<any> {

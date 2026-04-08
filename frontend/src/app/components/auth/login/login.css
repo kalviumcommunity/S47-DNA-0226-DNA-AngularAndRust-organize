@@ -77,3 +77,33 @@
 .auth-footer a:hover {
   color: var(--accent-primary-hover);
 }
+
+/* ── Guard redirect message ── */
+.auth-redirect-msg {
+  background: var(--warning-bg);
+  color: var(--warning);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: 500;
+  margin-bottom: var(--space-md);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  text-align: center;
+}
+
+/* ── Divider ── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin: var(--space-lg) 0 var(--space-sm);
+  color: var(--text-muted);
+  font-size: var(--font-xs);
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
