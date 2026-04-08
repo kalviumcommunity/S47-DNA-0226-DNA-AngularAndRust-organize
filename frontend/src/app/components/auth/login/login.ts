@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../../services/api.service';
 
 @Component({
@@ -11,16 +11,33 @@ import { ApiService } from '../../../services/api.service';
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email = '';
   password = '';
   error = '';
   loading = false;
+  redirectMsg = '';
+  private returnUrl = '/dashboard';
 
-  constructor(private api: ApiService, private router: Router) {
+  constructor(
+    private api: ApiService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
     if (api.isAuthenticated()) {
       this.router.navigate(['/dashboard']);
     }
+  }
+
+  ngOnInit(): void {
+    // Read returnUrl query param — set by authGuard when redirecting here
+    this.route.queryParamMap.subscribe(params => {
+      const url = params.get('returnUrl');
+      if (url) {
+        this.returnUrl = url;
+        this.redirectMsg = 'You must be logged in to access that page.';
+      }
+    });
   }
 
   onSubmit() {
@@ -28,7 +45,7 @@ export class LoginComponent {
     this.loading = true;
     this.api.login({ email: this.email, password: this.password }).subscribe({
       next: () => {
-        this.router.navigate(['/dashboard']);
+        this.router.navigate([this.returnUrl]);
       },
       error: (err: any) => {
         this.loading = false;
@@ -43,5 +60,14 @@ export class LoginComponent {
         }
       }
     });
+  }
+
+  /**
+   * Demo login — sets mock auth state to demonstrate route guard behavior
+   * without needing a running backend.
+   */
+  demoLogin(): void {
+    this.api.demoLogin();
+    this.router.navigate([this.returnUrl]);
   }
 }

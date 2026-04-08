@@ -6,6 +6,13 @@
       <p>Sign in to your workflow dashboard</p>
     </div>
 
+    <!-- Guard redirect message -->
+    @if (redirectMsg) {
+      <div class="auth-redirect-msg" id="guard-redirect-msg">
+        🔒 {{ redirectMsg }}
+      </div>
+    }
+
     @if (error) {
       <div class="auth-error">{{ error }}</div>
     }
@@ -51,6 +58,18 @@
         {{ loading ? 'Signing in...' : 'Sign In' }}
       </button>
     </form>
+
+    <!-- Demo login for guard demonstration -->
+    <div class="auth-divider">
+      <span>or</span>
+    </div>
+    <button
+      class="btn btn-ghost btn-lg auth-submit"
+      (click)="demoLogin()"
+      id="demo-login-btn"
+    >
+      ⚡ Demo Login (No Backend Needed)
+    </button>
 
     <div class="auth-footer">
       <p>Don't have an account? <a routerLink="/register">Register your institution</a></p>
