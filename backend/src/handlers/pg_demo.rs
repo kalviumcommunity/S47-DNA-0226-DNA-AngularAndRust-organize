@@ -54,17 +54,31 @@ use sqlx::Row;
 
 /// GET /api/pg-demo
 /// READ operation fetching all records systematically safely mapping nullable roles.
+/// Demonstrates robust scaling utilizing native Postgres Limit, Offset, and Filter optimizations dynamically.
 pub async fn list_demo_records(
     State(state): State<Arc<AppState>>,
+    axum::extract::Query(params): axum::extract::Query<crate::models::pg_demo::ListParams>,
 ) -> Result<impl IntoResponse, AppError> {
     let pg_pool = state.pg_db.as_ref().ok_or_else(|| {
         AppError::Internal(anyhow::anyhow!("Postgres is disabled."))
     })?;
 
-    let records = sqlx::query("SELECT id, name, role FROM demo_records ORDER BY id DESC")
+    // 1. Pagination Mathematics resolving defaults securely
+    let page = params.page.unwrap_or(1).max(1); // Force minimum page 1
+    let limit = params.limit.unwrap_or(10).min(100); // Cap mapping locally at 100 max per pull
+    let offset = (page - 1) * limit;
+
+    // 2. Safe Database Execution: Optimized selection capturing specific columns filtering explicitly via $1 mappings without concatenation.
+    // The query logic checks if `role` is null or if it matches.
+    let records = sqlx::query(
+        "SELECT id, name, role FROM demo_records WHERE ($1::varchar IS NULL OR role = $1) ORDER BY id DESC LIMIT $2 OFFSET $3"
+    )
+        .bind(&params.role)
+        .bind(limit)
+        .bind(offset)
         .fetch_all(pg_pool)
         .await
-        .context("Failed fetching records")?;
+        .context("Failed fetching paginated records from PostgreSQL")?;
 
     let mut response_list = Vec::new();
     for row in records {

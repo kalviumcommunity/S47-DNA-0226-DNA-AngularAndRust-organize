@@ -7,6 +7,13 @@ pub struct CreateRecordPayload {
 }
 
 #[derive(Deserialize, Debug)]
+pub struct ListParams {
+    pub page: Option<i64>,
+    pub limit: Option<i64>,
+    pub role: Option<String>, // Optional explicit filtering target
+}
+
+#[derive(Deserialize, Debug)]
 pub struct UpdateRecordPayload {
     pub name: Option<String>,
     pub role: Option<String>,
