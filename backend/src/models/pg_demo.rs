@@ -6,12 +6,6 @@ pub struct CreateRecordPayload {
     pub role: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct UpdateRecordPayload {
-    pub name: Option<String>,
-    pub role: Option<String>,
-}
-
 #[derive(Serialize, Debug)]
 pub struct RecordResponse {
     pub id: i32,
