@@ -41,6 +41,7 @@ async fn main() {
     println!("📋 API endpoints:");
     println!("   GET  /health                    ← Health check (no auth)");
     println!("   POST /api/feedback              ← REST API assignment (no auth)");
+    println!("   POST /api/profiles              ← Serde JSON assignment (no auth)");
     println!("   POST /api/auth/register-tenant");
     println!("   POST /api/auth/login");
     println!("   GET  /api/auth/me");
