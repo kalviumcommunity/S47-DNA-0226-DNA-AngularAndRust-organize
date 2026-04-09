@@ -26,23 +26,26 @@ pub async fn create_demo_record(
 
 use sqlx::Row;
 
-    // 2. Safe Database Execution: Using SQLx parameterized bindings to prevent Injection
-    // We use the runtime non-macro `query` function here so we don't strictly require Postgres
-    // to be running during compile time.
+    let configured_role = payload.role.unwrap_or_else(|| "user".to_string());
+
+    // 2. Safe Database Execution: Executing the query against the newly MIGRATED SCHEMA
     let result = sqlx::query(
-        "INSERT INTO demo_records (name) VALUES ($1) RETURNING id"
+        "INSERT INTO demo_records (name, role) VALUES ($1, $2) RETURNING id, role"
     )
     .bind(&payload.name)
+    .bind(&configured_role)
     .fetch_one(pg_pool)
     .await
     .context("Failed to insert record into PostgreSQL database")?; // 3. anyhow Context for internal logs
 
     let inserted_id: i32 = result.get("id");
+    let returned_role: String = result.get("role");
 
     let response = RecordResponse {
         id: inserted_id,
         name: payload.name,
-        message: "Successfully inserted into PostgreSQL".to_string(),
+        role: returned_role,
+        message: "Successfully inserted into migrated PostgreSQL table".to_string(),
     };
 
     Ok((StatusCode::CREATED, Json(response)))
