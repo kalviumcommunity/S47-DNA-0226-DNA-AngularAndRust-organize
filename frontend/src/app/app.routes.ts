@@ -15,6 +15,10 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('./components/auth/register/register').then(m => m.RegisterComponent)
   },
+  {
+    path: 'pg-demo',
+    loadComponent: () => import('./components/pg-demo/pg-demo.component').then(m => m.PgDemoComponent)
+  },
 
   // ── Protected routes (wrapped in layout) ──
   {
