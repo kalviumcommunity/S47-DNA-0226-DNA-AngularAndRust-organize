@@ -5,6 +5,7 @@ pub mod tenant;
 pub mod workflow;
 pub mod request;
 pub mod audit;
+pub mod feedback;
 
 use serde::Serialize;
 
