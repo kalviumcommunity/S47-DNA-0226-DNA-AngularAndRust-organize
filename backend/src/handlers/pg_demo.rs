@@ -6,14 +6,14 @@ use sqlx::Row;
 use crate::{
     config::AppState,
     error::AppError,
-    models::pg_demo::{CreateRecordPayload, RecordResponse},
+    models::pg_demo::{CreatePgDemoRequest, PgDemoRecordResponse},
 };
 
 /// POST /api/pg-demo
 /// Inserts a record into PostgreSQL securely avoiding SQL injection via parameterized queries.
 pub async fn create_demo_record(
     State(state): State<Arc<AppState>>,
-    Json(payload): Json<CreateRecordPayload>,
+    Json(payload): Json<CreatePgDemoRequest>,
 ) -> Result<impl IntoResponse, AppError> {
 
     if payload.name.trim().is_empty() {
@@ -42,11 +42,11 @@ use sqlx::Row;
     let inserted_id: i32 = result.get("id");
     let returned_role: String = result.get("role");
 
-    let response = RecordResponse {
+    let response = PgDemoRecordResponse {
         id: inserted_id,
         name: payload.name,
-        role: returned_role,
-        message: "Successfully inserted into migrated PostgreSQL table".to_string(),
+        role: Some(returned_role),
+        created_at: Some(chrono::Utc::now().to_rfc3339()),
     };
 
     Ok((StatusCode::CREATED, Json(response)))
@@ -82,10 +82,11 @@ pub async fn list_demo_records(
 
     let mut response_list = Vec::new();
     for row in records {
-        response_list.push(crate::models::pg_demo::FetchRecordResponse {
+        response_list.push(crate::models::pg_demo::PgDemoRecordResponse {
             id: row.get("id"),
             name: row.get("name"),
             role: row.try_get("role").ok(),
+            created_at: Some(chrono::Utc::now().to_rfc3339()), // AI Case Study mapping: Successfully injected backward compatible optional boundaries!
         });
     }
 
