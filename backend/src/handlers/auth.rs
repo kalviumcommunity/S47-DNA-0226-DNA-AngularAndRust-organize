@@ -189,7 +189,7 @@ pub async fn register_tenant(
     let token = encode(
         &Header::default(),
         &claims,
-        &EncodingKey::from_secret(state.jwt_secret.as_bytes()),
+        &state.jwt_encoding_key,
     )
     .unwrap_or_default();
 
@@ -273,11 +273,10 @@ pub async fn login(
         tenant_name: tenant_name.clone(),
         exp: (chrono::Utc::now() + chrono::Duration::hours(24)).timestamp() as usize,
     };
-
     let token = encode(
         &Header::default(),
         &claims,
-        &EncodingKey::from_secret(state.jwt_secret.as_bytes()),
+        &state.jwt_encoding_key,
     )
     .unwrap_or_default();
 
