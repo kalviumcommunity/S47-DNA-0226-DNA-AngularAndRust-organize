@@ -34,14 +34,12 @@ impl AppState {
             if let Ok(pool) = PgPool::connect(&pg_url).await {
                 println!("✅ Connected to Postgres database!");
                 
-                // Ensure table exists for demo
-                let _ = sqlx::query(
-                    "CREATE TABLE IF NOT EXISTS demo_records (
-                        id SERIAL PRIMARY KEY,
-                        name VARCHAR(100) NOT NULL,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    )"
-                ).execute(&pool).await;
+                // 3. Execution of Schema Version Migrations mapping directly to our `./migrations` folder!
+                // This tracks the exact versions locally and natively deploys new up/down SQL schema patches.
+                sqlx::migrate!("./migrations")
+                    .run(&pool)
+                    .await
+                    .expect("Failed to apply schema migrations to PostgreSQL!");
 
                 pg_db = Some(pool);
             } else {
