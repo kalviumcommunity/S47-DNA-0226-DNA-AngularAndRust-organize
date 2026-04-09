@@ -1,10 +1,12 @@
 use sqlx::sqlite::{SqlitePool, SqliteConnectOptions, SqliteJournalMode};
+use sqlx::{PgPool};
 use std::str::FromStr;
 
 /// Shared application state accessible by all handlers via Axum's State extractor.
 #[derive(Clone)]
 pub struct AppState {
     pub db: SqlitePool,
+    pub pg_db: Option<PgPool>, // Assignment optional postgres connection
     pub jwt_secret: String,
 }
 
@@ -26,6 +28,27 @@ impl AppState {
             .await
             .expect("Failed to connect to SQLite database");
 
-        AppState { db, jwt_secret }
+        // Safe DB connection for assignment
+        let mut pg_db = None;
+        if let Ok(pg_url) = std::env::var("PG_DATABASE_URL") {
+            if let Ok(pool) = PgPool::connect(&pg_url).await {
+                println!("✅ Connected to Postgres database!");
+                
+                // Ensure table exists for demo
+                let _ = sqlx::query(
+                    "CREATE TABLE IF NOT EXISTS demo_records (
+                        id SERIAL PRIMARY KEY,
+                        name VARCHAR(100) NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )"
+                ).execute(&pool).await;
+
+                pg_db = Some(pool);
+            } else {
+                eprintln!("⚠️ Failed to connect to Postgres using PG_DATABASE_URL. Moving on safely.");
+            }
+        }
+
+        AppState { db, pg_db, jwt_secret }
     }
 }
