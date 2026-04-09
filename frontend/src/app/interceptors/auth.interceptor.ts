@@ -10,8 +10,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const apiService = inject(ApiService);
 
-  // Attach token explicitly exclusively inside browser environments safely 
-  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+  // Explicit AI-Guided Security Enhancement: Skip attaching sensitive tokens onto purely Public endpoints!
+  const isPublicRoute = req.url.includes('/api/auth/login') || req.url.includes('/api/auth/register-tenant');
+
+  // Attach token explicitly exclusively inside browser environments safely if route is PROTECTED 
+  if (!isPublicRoute && typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
     const token = localStorage.getItem('wf_token');
     if (token) {
       req = req.clone({
