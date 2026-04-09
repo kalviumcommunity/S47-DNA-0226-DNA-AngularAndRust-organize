@@ -1,6 +1,7 @@
 use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
 use anyhow::Context;
 use std::sync::Arc;
+use sqlx::Row;
 
 use crate::{
     config::AppState,
@@ -26,24 +27,109 @@ pub async fn create_demo_record(
 
 use sqlx::Row;
 
-    // 2. Safe Database Execution: Using SQLx parameterized bindings to prevent Injection
-    // We use the runtime non-macro `query` function here so we don't strictly require Postgres
-    // to be running during compile time.
+    let configured_role = payload.role.unwrap_or_else(|| "user".to_string());
+
+    // 2. Safe Database Execution: Executing the query against the newly MIGRATED SCHEMA
     let result = sqlx::query(
-        "INSERT INTO demo_records (name) VALUES ($1) RETURNING id"
+        "INSERT INTO demo_records (name, role) VALUES ($1, $2) RETURNING id, role"
     )
     .bind(&payload.name)
+    .bind(&configured_role)
     .fetch_one(pg_pool)
     .await
     .context("Failed to insert record into PostgreSQL database")?; // 3. anyhow Context for internal logs
 
     let inserted_id: i32 = result.get("id");
+    let returned_role: String = result.get("role");
 
     let response = RecordResponse {
         id: inserted_id,
         name: payload.name,
-        message: "Successfully inserted into PostgreSQL".to_string(),
+        role: returned_role,
+        message: "Successfully inserted into migrated PostgreSQL table".to_string(),
     };
 
     Ok((StatusCode::CREATED, Json(response)))
 }
+
+/// GET /api/pg-demo
+/// READ operation fetching all records systematically safely mapping nullable roles.
+pub async fn list_demo_records(
+    State(state): State<Arc<AppState>>,
+) -> Result<impl IntoResponse, AppError> {
+    let pg_pool = state.pg_db.as_ref().ok_or_else(|| {
+        AppError::Internal(anyhow::anyhow!("Postgres is disabled."))
+    })?;
+
+    let records = sqlx::query("SELECT id, name, role FROM demo_records ORDER BY id DESC")
+        .fetch_all(pg_pool)
+        .await
+        .context("Failed fetching records")?;
+
+    let mut response_list = Vec::new();
+    for row in records {
+        response_list.push(crate::models::pg_demo::FetchRecordResponse {
+            id: row.get("id"),
+            name: row.get("name"),
+            role: row.try_get("role").ok(),
+        });
+    }
+
+    Ok((StatusCode::OK, Json(response_list)))
+}
+
+/// PUT /api/pg-demo/:id
+/// UPDATE operation dynamically replacing properties predictably.
+pub async fn update_demo_record(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Path(id): axum::extract::Path<i32>,
+    Json(payload): Json<crate::models::pg_demo::UpdateRecordPayload>,
+) -> Result<impl IntoResponse, AppError> {
+    let pg_pool = state.pg_db.as_ref().ok_or_else(|| {
+        AppError::Internal(anyhow::anyhow!("Postgres is disabled."))
+    })?;
+
+    if payload.name.is_none() && payload.role.is_none() {
+        return Err(AppError::BadRequest("No update fields provided".into()));
+    }
+
+    let result = sqlx::query(
+        "UPDATE demo_records SET name = COALESCE($1, name), role = COALESCE($2, role) WHERE id = $3"
+    )
+    .bind(&payload.name)
+    .bind(&payload.role)
+    .bind(id)
+    .execute(pg_pool)
+    .await
+    .context("Failed to execute update logic heavily abstracting errors")?;
+
+    if result.rows_affected() == 0 {
+        return Err(AppError::NotFound(format!("Record ID {} not found", id)));
+    }
+
+    Ok((StatusCode::OK, Json(serde_json::json!({ "message": "Record updated successfully" }))))
+}
+
+/// DELETE /api/pg-demo/:id
+/// DELETE operation permanently tearing down constraints and rows mapped exactly.
+pub async fn delete_demo_record(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Path(id): axum::extract::Path<i32>,
+) -> Result<impl IntoResponse, AppError> {
+    let pg_pool = state.pg_db.as_ref().ok_or_else(|| {
+        AppError::Internal(anyhow::anyhow!("Postgres is disabled."))
+    })?;
+
+    let result = sqlx::query("DELETE FROM demo_records WHERE id = $1")
+        .bind(id)
+        .execute(pg_pool)
+        .await
+        .context("Deletion failed internally")?;
+
+    if result.rows_affected() == 0 {
+        return Err(AppError::NotFound(format!("Cannot delete, ID {} not found", id)));
+    }
+
+    Ok((StatusCode::OK, Json(serde_json::json!({ "message": "Record deleted successfully" }))))
+}
+

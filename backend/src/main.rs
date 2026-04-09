@@ -43,7 +43,10 @@ async fn main() {
     println!("   GET  /health                    ← Health check (no auth)");
     println!("   POST /api/feedback              ← REST API assignment (no auth)");
     println!("   POST /api/profiles              ← Serde JSON assignment (no auth)");
-    println!("   POST /api/pg-demo               ← PostgreSQL Integration demo (no auth)");
+    println!("   POST /api/pg-demo               ← PostgreSQL Create (CRUD)");
+    println!("   GET  /api/pg-demo               ← PostgreSQL Read (CRUD)");
+    println!("   PUT  /api/pg-demo/:id           ← PostgreSQL Update (CRUD)");
+    println!("   DEL  /api/pg-demo/:id           ← PostgreSQL Delete (CRUD)");
     println!("   POST /api/auth/register-tenant");
     println!("   POST /api/auth/login");
     println!("   GET  /api/auth/me");
