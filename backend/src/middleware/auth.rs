@@ -56,7 +56,7 @@ impl FromRequestParts<Arc<AppState>> for AuthUser {
         // Decode and validate JWT
         let token_data = decode::<Claims>(
             token,
-            &DecodingKey::from_secret(state.jwt_secret.as_bytes()),
+            &state.jwt_decoding_key,
             &Validation::default(),
         );
 

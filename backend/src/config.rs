@@ -2,12 +2,15 @@ use sqlx::sqlite::{SqlitePool, SqliteConnectOptions, SqliteJournalMode};
 use sqlx::{PgPool};
 use std::str::FromStr;
 
+use jsonwebtoken::{EncodingKey, DecodingKey};
+
 /// Shared application state accessible by all handlers via Axum's State extractor.
 #[derive(Clone)]
 pub struct AppState {
     pub db: SqlitePool,
     pub pg_db: Option<PgPool>, // Assignment optional postgres connection
-    pub jwt_secret: String,
+    pub jwt_encoding_key: EncodingKey,
+    pub jwt_decoding_key: DecodingKey,
 }
 
 impl AppState {
@@ -47,6 +50,9 @@ impl AppState {
             }
         }
 
-        AppState { db, pg_db, jwt_secret }
+        let jwt_encoding_key = EncodingKey::from_secret(jwt_secret.as_bytes());
+        let jwt_decoding_key = DecodingKey::from_secret(jwt_secret.as_bytes());
+
+        AppState { db, pg_db, jwt_encoding_key, jwt_decoding_key }
     }
 }
