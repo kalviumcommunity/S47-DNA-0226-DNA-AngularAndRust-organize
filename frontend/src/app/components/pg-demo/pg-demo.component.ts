@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PgDemoService, PgDemoRecord } from '../../services/pg-demo.service';
+import { PgDemoService, PgDemoRecordResponse } from '../../services/pg-demo.service';
 import { HttpClientModule } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
 import { PgDemoWidgetComponent } from '../pg-demo-widget/pg-demo-widget.component';
@@ -43,6 +43,7 @@ import { PgDemoWidgetComponent } from '../pg-demo-widget/pg-demo-widget.componen
           <div>
             <p class="font-bold text-gray-800">ID: {{ record.id }} | {{ record.name }}</p>
             <p class="text-sm text-gray-500 font-mono">Role: {{ record.role }}</p>
+            <p *ngIf="record.created_at" class="text-xs text-blue-400 mt-1">Created At: {{ record.created_at }}</p>
           </div>
           <div class="flex gap-2">
             <button (click)="deleteSecurely(record.id, '')" [disabled]="isLoading" class="bg-gray-400 text-white px-3 py-1 text-sm rounded hover:bg-red-500 disabled:opacity-50">Public Delete</button>
@@ -58,7 +59,7 @@ import { PgDemoWidgetComponent } from '../pg-demo-widget/pg-demo-widget.componen
   `
 })
 export class PgDemoComponent implements OnInit {
-  records: PgDemoRecord[] = [];
+  records: PgDemoRecordResponse[] = [];
   lastResponseMessage: string = 'Waiting for interaction...';
   isError: boolean = false;
   isLoading: boolean = false;

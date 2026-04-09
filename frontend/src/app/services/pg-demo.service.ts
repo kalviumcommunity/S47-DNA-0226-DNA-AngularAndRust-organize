@@ -3,11 +3,16 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-export interface PgDemoRecord {
+export interface PgDemoRecordResponse {
   id: number;
   name: string;
-  role: string;
-  message?: string;
+  role?: string;
+  created_at?: string; // AI Case Study mapping successfully synchronized!
+}
+
+export interface CreatePgDemoRequest {
+  name: string;
+  role?: string;
 }
 
 @Injectable({
@@ -34,14 +39,14 @@ export class PgDemoService {
     return throwError(() => new Error(friendlyMessage));
   }
 
-  getRecords(limit: number = 5, page: number = 1): Observable<PgDemoRecord[]> {
-    return this.http.get<PgDemoRecord[]>(`${this.apiUrl}?limit=${limit}&page=${page}`)
+  getRecords(limit: number = 5, page: number = 1): Observable<PgDemoRecordResponse[]> {
+    return this.http.get<PgDemoRecordResponse[]>(`${this.apiUrl}?limit=${limit}&page=${page}`)
       .pipe(catchError(this.handleCentralError));
   }
 
-  createRecord(name: string, role?: string): Observable<PgDemoRecord> {
-    const payload = { name, role: role || 'user' };
-    return this.http.post<PgDemoRecord>(this.apiUrl, payload)
+  createRecord(name: string, role?: string): Observable<PgDemoRecordResponse> {
+    const payload: CreatePgDemoRequest = { name, role: role || 'user' };
+    return this.http.post<PgDemoRecordResponse>(this.apiUrl, payload)
       .pipe(catchError(this.handleCentralError));
   }
 
