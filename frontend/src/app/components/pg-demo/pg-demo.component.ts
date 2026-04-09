@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PgDemoService, PgDemoRecordResponse } from '../../services/pg-demo.service';
 import { HttpClientModule } from '@angular/common/http';
-import { finalize } from 'rxjs/operators';
+import { finalize, debounceTime, throttleTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
 import { PgDemoWidgetComponent } from '../pg-demo-widget/pg-demo-widget.component';
 
 @Component({
@@ -20,6 +21,13 @@ import { PgDemoWidgetComponent } from '../pg-demo-widget/pg-demo-widget.componen
             <app-pg-demo-widget></app-pg-demo-widget>
           </div>
         </div>
+        
+        <!-- Live Search Field (Debounce Demonstration) -->
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-gray-700">Live Role Filter (Debounced 500ms)</label>
+          <input type="text" (input)="onSearchInput($event)" placeholder="Type a role (e.g., admin, user)..."
+                 class="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+        </div>
 
         <div [ngClass]="{'border-red-500 border-l-4 bg-red-50': isError, 'bg-gray-100': !isError}" class="mt-4 p-3 rounded break-words transition-all duration-300 flex items-center gap-3">
           <div *ngIf="isLoading" class="animate-spin h-5 w-5 border-4 border-blue-500 border-t-transparent rounded-full display-inline-block"></div>
@@ -30,11 +38,11 @@ import { PgDemoWidgetComponent } from '../pg-demo-widget/pg-demo-widget.componen
       </div>
 
       <div class="flex gap-4">
-        <button (click)="fetchRecords()" [disabled]="isLoading" class="bg-blue-600 text-white px-4 py-2 rounded transition hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-          {{ isLoading ? 'Loading...' : 'Refresh Arrays' }}
+        <button (click)="fetchRecords(true)" [disabled]="isLoading" class="bg-blue-600 text-white px-4 py-2 rounded transition hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ isLoading ? 'Loading...' : 'Refresh Arrays (Bypass Cache)' }}
         </button>
-        <button (click)="createDemoRecord()" [disabled]="isLoading" class="bg-green-600 text-white px-4 py-2 rounded transition hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
-          Create Random Entity
+        <button (click)="throttleCreate()" [disabled]="isLoading" class="bg-green-600 text-white px-4 py-2 rounded transition hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          Spam-Proof Create (Throttled 2s)
         </button>
       </div>
 
@@ -58,21 +66,60 @@ import { PgDemoWidgetComponent } from '../pg-demo-widget/pg-demo-widget.componen
     </div>
   `
 })
-export class PgDemoComponent implements OnInit {
+export class PgDemoComponent implements OnInit, OnDestroy {
   records: PgDemoRecordResponse[] = [];
   lastResponseMessage: string = 'Waiting for interaction...';
   isError: boolean = false;
   isLoading: boolean = false;
 
+  // RxJS Subjects
+  private searchSubject = new Subject<string>();
+  private createSubject = new Subject<void>();
+  private sub = new Subscription();
+  private currentRole: string | undefined = undefined;
+
   constructor(private pgService: PgDemoService) {}
 
   ngOnInit() {
-    this.fetchRecords();
+    // 1. Debounce logic!
+    this.sub.add(
+      this.searchSubject.pipe(
+        debounceTime(500),
+        distinctUntilChanged()
+      ).subscribe(searchTerm => {
+        this.currentRole = searchTerm.trim() || undefined;
+        this.fetchRecords(false);
+      })
+    );
+
+    // 2. Throttle logic!
+    this.sub.add(
+      this.createSubject.pipe(
+        throttleTime(2000)
+      ).subscribe(() => {
+        this.createDemoRecord();
+      })
+    );
+
+    this.fetchRecords(false);
   }
 
-  fetchRecords() {
-    this.executeLoadingState('Fetching postgres arrays...');
-    this.pgService.getRecords().pipe(
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
+  }
+
+  onSearchInput(event: Event) {
+    const val = (event.target as HTMLInputElement).value;
+    this.searchSubject.next(val);
+  }
+
+  throttleCreate() {
+    this.createSubject.next();
+  }
+
+  fetchRecords(forceRefresh: boolean = false) {
+    this.executeLoadingState(forceRefresh ? 'Bypassing cache natively to fetch fresh arrays...' : 'Attempting to map local cache securely...');
+    this.pgService.getRecords(10, 1, this.currentRole, forceRefresh).pipe(
       finalize(() => this.isLoading = false)
     ).subscribe({
       next: (data) => {
@@ -84,14 +131,15 @@ export class PgDemoComponent implements OnInit {
   }
 
   createDemoRecord() {
-    const randomName = 'User-' + Math.floor(Math.random() * 100);
+    const randomName = 'ThrottledUser-' + Math.floor(Math.random() * 100);
     this.executeLoadingState('Creating user securely...');
-    this.pgService.createRecord(randomName, 'guest').pipe(
+    this.pgService.createRecord(randomName, this.currentRole).pipe(
       finalize(() => this.isLoading = false)
     ).subscribe({
       next: (req) => {
         this.logMessage(`Created record strictly: ID ${req.id}`, false);
-        this.fetchRecords(); 
+        this.pgService.clearGlobalCacheSafely();
+        this.fetchRecords(true); 
       },
       error: (err: Error) => this.logMessage(`Service Mapping Failed: ${err.message}`, true) // Abstracted!
     });
@@ -104,7 +152,8 @@ export class PgDemoComponent implements OnInit {
     ).subscribe({
       next: () => {
         this.logMessage(`Successfully destructed Record ID ${id}!`, false);
-        this.fetchRecords();
+        this.pgService.clearGlobalCacheSafely();
+        this.fetchRecords(true);
       },
       error: (err: Error) => this.logMessage(`Constraint Violation: ${err.message}`, true) // Abstracted!
     });
