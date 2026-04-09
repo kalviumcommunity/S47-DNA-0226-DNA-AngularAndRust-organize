@@ -34,5 +34,7 @@ pub fn create_routes(state: Arc<AppState>) -> Router {
         .route("/api/audit-logs", get(handlers::audit::list_audit_logs))
         // Feedback (public demo endpoint for REST API assignment)
         .route("/api/feedback", post(handlers::feedback::submit_feedback))
+        // Profiles (public demo endpoint for Serde JSON mapping assignment)
+        .route("/api/profiles", post(handlers::profile::create_profile))
         .with_state(state)
 }

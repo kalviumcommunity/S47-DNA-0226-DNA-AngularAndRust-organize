@@ -6,6 +6,7 @@ pub mod workflow;
 pub mod request;
 pub mod audit;
 pub mod feedback;
+pub mod profile;
 
 use serde::Serialize;
 
