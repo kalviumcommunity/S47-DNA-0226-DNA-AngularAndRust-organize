@@ -6,3 +6,4 @@ pub mod requests;
 pub mod audit;
 pub mod feedback;
 pub mod profile;
+pub mod pg_demo;
