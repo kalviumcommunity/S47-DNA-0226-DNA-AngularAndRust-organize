@@ -6,6 +6,19 @@ pub struct CreateRecordPayload {
     pub role: Option<String>,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct ListParams {
+    pub page: Option<i64>,
+    pub limit: Option<i64>,
+    pub role: Option<String>, // Optional explicit filtering target
+}
+
+#[derive(Deserialize, Debug)]
+pub struct UpdateRecordPayload {
+    pub name: Option<String>,
+    pub role: Option<String>,
+}
+
 #[derive(Serialize, Debug)]
 pub struct RecordResponse {
     pub id: i32,

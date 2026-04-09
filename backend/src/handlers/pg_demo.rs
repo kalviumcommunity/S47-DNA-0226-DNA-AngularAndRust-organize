@@ -125,10 +125,12 @@ pub async fn update_demo_record(
 }
 
 /// DELETE /api/pg-demo/:id
-/// DELETE operation permanently tearing down constraints and rows mapped exactly.
+/// DELETE operation permanently tearing down constraints securely.
+/// PROTECTED via Extractor Auth Hook Middleware blocking unauthenticated users!
 pub async fn delete_demo_record(
     State(state): State<Arc<AppState>>,
     axum::extract::Path(id): axum::extract::Path<i32>,
+    _auth: crate::middleware::auth::AuthUser, // Authentication Middleware Hook
 ) -> Result<impl IntoResponse, AppError> {
     let pg_pool = state.pg_db.as_ref().ok_or_else(|| {
         AppError::Internal(anyhow::anyhow!("Postgres is disabled."))
