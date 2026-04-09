@@ -4,3 +4,4 @@ pub mod users;
 pub mod workflows;
 pub mod requests;
 pub mod audit;
+pub mod feedback;

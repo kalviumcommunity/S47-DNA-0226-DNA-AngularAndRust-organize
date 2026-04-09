@@ -32,5 +32,7 @@ pub fn create_routes(state: Arc<AppState>) -> Router {
         .route("/api/requests/{id}/decide", post(handlers::requests::decide_request))
         // Audit (protected)
         .route("/api/audit-logs", get(handlers::audit::list_audit_logs))
+        // Feedback (public demo endpoint for REST API assignment)
+        .route("/api/feedback", post(handlers::feedback::submit_feedback))
         .with_state(state)
 }
