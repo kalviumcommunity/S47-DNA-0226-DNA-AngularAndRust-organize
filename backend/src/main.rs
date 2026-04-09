@@ -1,4 +1,6 @@
-use tower_http::cors::{CorsLayer, Any};
+use tower_http::cors::CorsLayer;
+use axum::{http::Request, response::Response};
+use axum::middleware::Next;
 use std::sync::Arc;
 
 mod config;
@@ -8,6 +10,15 @@ mod routes;
 mod handlers;
 mod models;
 mod middleware;
+
+/// Custom Logging Middleware tracking every incoming request before it reaches ANY handler
+async fn logging_middleware(
+    req: Request<axum::body::Body>,
+    next: Next,
+) -> Result<Response, axum::http::StatusCode> {
+    println!("🔥 [MIDDLEWARE INTERCEPT]: Received {} request mapped towards {}", req.method(), req.uri());
+    Ok(next.run(req).await)
+}
 
 /// Application entry point.
 /// - Loads environment config (.env file)
@@ -22,13 +33,20 @@ async fn main() {
     // Create database tables
     db::initialize(&state.db).await;
 
-    // Allow Angular frontend (port 4200) to call this API
+    // Allow Angular frontend (port 4200) to safely execute Cross-Origin Requests
     let cors = CorsLayer::new()
-        .allow_origin(Any)
-        .allow_methods(Any)
-        .allow_headers(Any);
+        .allow_origin("http://localhost:4200".parse::<axum::http::HeaderValue>().unwrap())
+        .allow_methods(vec![
+            axum::http::Method::GET,
+            axum::http::Method::POST,
+            axum::http::Method::PUT,
+            axum::http::Method::DELETE,
+        ])
+        .allow_headers(vec![axum::http::header::AUTHORIZATION, axum::http::header::CONTENT_TYPE]);
 
-    let app = routes::create_routes(state).layer(cors);
+    let app = routes::create_routes(state)
+        .layer(cors)
+        .layer(axum::middleware::from_fn(logging_middleware));
 
     // Configurable port via PORT environment variable
     let port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
