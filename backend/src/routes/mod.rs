@@ -1,5 +1,5 @@
 use axum::{
-    routing::{get, post, put},
+    routing::{get, post, put, delete},
     Router,
 };
 use std::sync::Arc;
@@ -38,5 +38,8 @@ pub fn create_routes(state: Arc<AppState>) -> Router {
         .route("/api/profiles", post(handlers::profile::create_profile))
         // Postgres Demo (public demo endpoint for Assignment)
         .route("/api/pg-demo", post(handlers::pg_demo::create_demo_record))
+        .route("/api/pg-demo", get(handlers::pg_demo::list_demo_records))
+        .route("/api/pg-demo/{id}", put(handlers::pg_demo::update_demo_record))
+        .route("/api/pg-demo/{id}", delete(handlers::pg_demo::delete_demo_record))
         .with_state(state)
 }

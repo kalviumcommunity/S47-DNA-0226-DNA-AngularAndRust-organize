@@ -1,6 +1,7 @@
 use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
 use anyhow::Context;
 use std::sync::Arc;
+use sqlx::Row;
 
 use crate::{
     config::AppState,
@@ -50,3 +51,85 @@ use sqlx::Row;
 
     Ok((StatusCode::CREATED, Json(response)))
 }
+
+/// GET /api/pg-demo
+/// READ operation fetching all records systematically safely mapping nullable roles.
+pub async fn list_demo_records(
+    State(state): State<Arc<AppState>>,
+) -> Result<impl IntoResponse, AppError> {
+    let pg_pool = state.pg_db.as_ref().ok_or_else(|| {
+        AppError::Internal(anyhow::anyhow!("Postgres is disabled."))
+    })?;
+
+    let records = sqlx::query("SELECT id, name, role FROM demo_records ORDER BY id DESC")
+        .fetch_all(pg_pool)
+        .await
+        .context("Failed fetching records")?;
+
+    let mut response_list = Vec::new();
+    for row in records {
+        response_list.push(crate::models::pg_demo::FetchRecordResponse {
+            id: row.get("id"),
+            name: row.get("name"),
+            role: row.try_get("role").ok(),
+        });
+    }
+
+    Ok((StatusCode::OK, Json(response_list)))
+}
+
+/// PUT /api/pg-demo/:id
+/// UPDATE operation dynamically replacing properties predictably.
+pub async fn update_demo_record(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Path(id): axum::extract::Path<i32>,
+    Json(payload): Json<crate::models::pg_demo::UpdateRecordPayload>,
+) -> Result<impl IntoResponse, AppError> {
+    let pg_pool = state.pg_db.as_ref().ok_or_else(|| {
+        AppError::Internal(anyhow::anyhow!("Postgres is disabled."))
+    })?;
+
+    if payload.name.is_none() && payload.role.is_none() {
+        return Err(AppError::BadRequest("No update fields provided".into()));
+    }
+
+    let result = sqlx::query(
+        "UPDATE demo_records SET name = COALESCE($1, name), role = COALESCE($2, role) WHERE id = $3"
+    )
+    .bind(&payload.name)
+    .bind(&payload.role)
+    .bind(id)
+    .execute(pg_pool)
+    .await
+    .context("Failed to execute update logic heavily abstracting errors")?;
+
+    if result.rows_affected() == 0 {
+        return Err(AppError::NotFound(format!("Record ID {} not found", id)));
+    }
+
+    Ok((StatusCode::OK, Json(serde_json::json!({ "message": "Record updated successfully" }))))
+}
+
+/// DELETE /api/pg-demo/:id
+/// DELETE operation permanently tearing down constraints and rows mapped exactly.
+pub async fn delete_demo_record(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Path(id): axum::extract::Path<i32>,
+) -> Result<impl IntoResponse, AppError> {
+    let pg_pool = state.pg_db.as_ref().ok_or_else(|| {
+        AppError::Internal(anyhow::anyhow!("Postgres is disabled."))
+    })?;
+
+    let result = sqlx::query("DELETE FROM demo_records WHERE id = $1")
+        .bind(id)
+        .execute(pg_pool)
+        .await
+        .context("Deletion failed internally")?;
+
+    if result.rows_affected() == 0 {
+        return Err(AppError::NotFound(format!("Cannot delete, ID {} not found", id)));
+    }
+
+    Ok((StatusCode::OK, Json(serde_json::json!({ "message": "Record deleted successfully" }))))
+}
+
